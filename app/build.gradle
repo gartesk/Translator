@@ -25,4 +25,6 @@ dependencies {
     implementation Libs.supportAppcompatV7
     implementation Libs.rxJava
     implementation Libs.rxAndroid
+    implementation Libs.rxBindingV7
+    implementation Libs.mosbyMvi
 }

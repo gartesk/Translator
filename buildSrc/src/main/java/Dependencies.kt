@@ -2,6 +2,8 @@ object Versions {
     const val supportLib = "28+"
     const val rxJava = "2.2.0"
     const val rxAndroid = "2.0.2"
+    const val rxBinding= "2.1.1"
+    const val mosby= "3.1.0"
     const val kotlin = "1.2.61"
     const val gradle = "3.1.3"
     const val targetSdk = 28
@@ -12,6 +14,8 @@ object Libs {
     const val supportAppcompatV7 = "com.android.support:appcompat-v7:${Versions.supportLib}"
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
     const val rxAndroid = "io.reactivex.rxjava2:rxandroid:${Versions.rxAndroid}"
+    const val rxBindingV7 = "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${Versions.rxBinding}"
+    const val mosbyMvi = "com.hannesdorfmann.mosby3:mvi:${Versions.mosby}"
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
 }
 

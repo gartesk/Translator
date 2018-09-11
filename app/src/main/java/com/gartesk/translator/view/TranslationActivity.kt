@@ -1,9 +1,10 @@
-package com.gartesk.translator
+package com.gartesk.translator.view
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.gartesk.translator.R
 
-class MainActivity : AppCompatActivity() {
+class TranslationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
