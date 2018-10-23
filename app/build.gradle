@@ -22,9 +22,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin
-    implementation Libs.supportAppcompatV7
+//    implementation Libs.appcompat
+//    implementation Libs.material
     implementation Libs.rxJava
     implementation Libs.rxAndroid
-    implementation Libs.rxBindingV7
+    implementation Libs.rxBinding
+//    implementation Libs.rxBindingMaterial
     implementation Libs.mosbyMvi
+    implementation Libs.jetpackNavFragment
+    implementation Libs.jetpackNavUI
 }
