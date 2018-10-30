@@ -10,21 +10,25 @@ class TranslationPresenter(
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
     override fun bindIntents() {
+        val cancellation = intent(TranslationView::cancellationIntent)
         val translation = intent(TranslationView::translationIntent)
-            .switchMap(::translate)
+
+        val viewStateEmitter = translation
+            .switchMap { translate(it, cancellation) }
             .observeOn(AndroidSchedulers.mainThread())
 
-        subscribeViewState(translation, TranslationView::render)
+        subscribeViewState(viewStateEmitter, TranslationView::render)
     }
 
-    private fun translate(query: String): Observable<TranslationViewState> {
+    private fun translate(query: String, cancellation: Observable<Unit>): Observable<TranslationViewState> {
         if (query.isEmpty()) {
             return Observable.just(EmptyTranslationViewState(query))
         }
         return translateStringCommand.execute(query)
+            .toObservable()
+            .takeUntil(cancellation)
             .map<TranslationViewState> { ResultTranslationViewState(query, it) }
             .defaultIfEmpty(EmptyTranslationViewState(query))
-            .toObservable()
             .startWith(LoadingTranslationViewState(query))
             .onErrorReturn { EmptyTranslationViewState(query) }
     }

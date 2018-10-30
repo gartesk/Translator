@@ -5,5 +5,6 @@ import io.reactivex.Observable
 
 interface TranslationView : MvpView {
     fun translationIntent(): Observable<String>
+    fun cancellationIntent(): Observable<Unit>
     fun render(viewState: TranslationViewState)
 }

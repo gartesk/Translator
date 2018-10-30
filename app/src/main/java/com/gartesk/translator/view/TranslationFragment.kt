@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import com.gartesk.translator.R
 import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.presentation.*
-//import com.google.android.material.textfield.TextInputEditText
 import com.hannesdorfmann.mosby3.mvi.MviFragment
-import com.jakewharton.rxbinding2.widget.RxTextView
-//import com.jakewharton.rxbinding3.widget.textChanges
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_translation.*
+import java.util.concurrent.TimeUnit
 
 class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>(), TranslationView {
 
@@ -29,7 +28,15 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         )
 
     override fun translationIntent(): Observable<String> =
-        RxTextView.textChanges(translationInput).map { it.toString() }
+        RxView.clicks(translateButton)
+            .mergeWith(Observable.just(Unit))
+            .debounce(1, TimeUnit.SECONDS)
+            .map { translatingInput.text.toString() }
+
+    override fun cancellationIntent(): Observable<Unit> =
+        RxView.clicks(cancelButton)
+            .debounce(1, TimeUnit.SECONDS)
+            .map { Unit }
 
     override fun render(viewState: TranslationViewState) {
         when (viewState) {
@@ -40,14 +47,26 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
     }
 
     private fun renderEmptyState(viewState: EmptyTranslationViewState) {
-        testText.text = "Empty"
+        translatingProgress.visibility = View.GONE
+        translateButton.isEnabled = true
+        cancelButton.visibility = View.GONE
+        translatingInput.isEnabled = true
+        translatedText.text = ""
     }
 
     private fun renderLoadingState(viewState: LoadingTranslationViewState) {
-        testText.text = "Loading"
+        translatingProgress.visibility = View.VISIBLE
+        translateButton.isEnabled = false
+        cancelButton.visibility = View.VISIBLE
+        translatingInput.isEnabled = false
+        translatedText.text = ""
     }
 
     private fun renderResultState(viewState: ResultTranslationViewState) {
-        testText.text = "Result"
+        translatingProgress.visibility = View.GONE
+        translateButton.isEnabled = true
+        cancelButton.visibility = View.GONE
+        translatingInput.isEnabled = true
+        translatedText.text = viewState.result
     }
 }
