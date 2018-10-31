@@ -10,6 +10,7 @@ android {
         targetSdkVersion Versions.targetSdk
         versionCode 1
         versionName "1.0"
+        buildConfigField 'String', 'YANDEX_API_KEY', yandexApiKey
     }
     buildTypes {
         release {
@@ -31,4 +32,8 @@ dependencies {
     implementation Libs.mosbyMvi
     implementation Libs.jetpackNavFragment
     implementation Libs.jetpackNavUI
+    implementation Libs.retrofit
+    implementation Libs.retrofitRxAdapter
+    implementation Libs.retrofitGsonConverter
+    implementation Libs.okHttpLoggingInterceptor
 }
