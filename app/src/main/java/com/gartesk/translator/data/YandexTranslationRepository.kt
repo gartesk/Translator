@@ -1,6 +1,8 @@
 package com.gartesk.translator.data
 
 import com.gartesk.translator.BuildConfig
+import com.gartesk.translator.domain.entity.Language
+import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.repository.TranslationRepository
 import io.reactivex.Maybe
 import okhttp3.OkHttpClient
@@ -28,9 +30,14 @@ class YandexTranslationRepository : TranslationRepository {
         .build()
         .create(YandexApi::class.java)
 
-    override fun translate(text: String): Maybe<String> =
-        api.translate(apiKey, text, "ru")
-            .map { it.text.first() }
+    override fun translate(text: Text, targetLanguage: Language): Maybe<Text> {
+        val langParam =
+            if (text.language.isUnknown) targetLanguage.value
+            else "${text.language.value}-${targetLanguage.value}"
+
+        return api.translate(apiKey, text.content, langParam)
+            .map { Text(content = it.text.first(), language = Language(it.lang)) }
+    }
 }
 
 private interface YandexApi {
@@ -39,7 +46,7 @@ private interface YandexApi {
     fun translate(
         @Query("key") apiKey: String,
         @Query("text") text: String,
-        @Query("lang") translationDirection: String
+        @Query("lang") translationDirection: String?
     ): Maybe<TranslateResponse>
 }
 

@@ -1,12 +1,16 @@
 package com.gartesk.translator.presentation
 
 import com.gartesk.translator.domain.command.MaybeCommand
+import com.gartesk.translator.domain.entity.Language
+import com.gartesk.translator.domain.entity.Text
+import com.gartesk.translator.domain.entity.Translation
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import com.gartesk.translator.presentation.ErrorTranslationViewState.*
 
 class TranslationPresenter(
-    private val translateStringCommand: MaybeCommand<String, String>
+    private val translateTextToLanguageCommand: MaybeCommand<Pair<Text, Language>, Translation>
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
     override fun bindIntents() {
@@ -14,22 +18,35 @@ class TranslationPresenter(
         val translation = intent(TranslationView::translationIntent)
 
         val viewStateEmitter = translation
-            .switchMap { translate(it, cancellation) }
+            .switchMap { (textFrom, languageTo) -> translate(textFrom, languageTo, cancellation) }
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(viewStateEmitter, TranslationView::render)
     }
 
-    private fun translate(query: String, cancellation: Observable<Unit>): Observable<TranslationViewState> {
-        if (query.isEmpty()) {
-            return Observable.just(EmptyTranslationViewState(query))
+    private fun translate(
+        textFrom: Text,
+        languageTo: Language,
+        cancellation: Observable<Unit>
+    ): Observable<TranslationViewState> {
+        if (textFrom.content.isEmpty()) {
+            return Observable.just(
+                ErrorTranslationViewState(textFrom, languageTo, ErrorType.EMPTY_TEXT)
+            )
+        } else if (languageTo == Language.UNKNOWN_LANGUAGE) {
+            return Observable.just(
+                ErrorTranslationViewState(textFrom, languageTo, ErrorType.TARGET_LANGUAGE)
+            )
         }
-        return translateStringCommand.execute(query)
+        val argument = textFrom to languageTo
+        return translateTextToLanguageCommand.execute(argument)
             .toObservable()
             .takeUntil(cancellation)
-            .map<TranslationViewState> { ResultTranslationViewState(query, it) }
-            .defaultIfEmpty(EmptyTranslationViewState(query))
-            .startWith(LoadingTranslationViewState(query))
-            .onErrorReturn { EmptyTranslationViewState(query) }
+            .map<TranslationViewState> {
+                ResultTranslationViewState(textFrom, it.to.language, it.to.content)
+            }
+            .defaultIfEmpty(EmptyTranslationViewState(textFrom, languageTo))
+            .startWith(LoadingTranslationViewState(textFrom, languageTo))
+            .onErrorReturn { ErrorTranslationViewState(textFrom, languageTo, ErrorType.CONNECTION) }
     }
 }

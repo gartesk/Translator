@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import com.gartesk.translator.R
 import com.gartesk.translator.TranslatorApplication
+import com.gartesk.translator.domain.entity.Language
+import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.*
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
@@ -21,17 +24,28 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val languages = arrayOf(Language.UNKNOWN_LANGUAGE, Language("en"), Language("ru"))
+        languageFromSpinner.adapter = ArrayAdapter<Language>(requireContext(), R.layout.item_language, R.id.languageName, languages)
+        languageToSpinner.adapter = ArrayAdapter<Language>(requireContext(), R.layout.item_language, R.id.languageName, languages)
+    }
+
     override fun createPresenter(): TranslationPresenter =
         TranslationPresenter(
             (requireActivity().application as TranslatorApplication)
                 .commandFactory.createTranslateStringCommand()
         )
 
-    override fun translationIntent(): Observable<String> =
+    override fun translationIntent(): Observable<Pair<Text, Language>> =
         RxView.clicks(translateButton)
-            .mergeWith(Observable.just(Unit))
             .debounce(1, TimeUnit.SECONDS)
-            .map { translatingInput.text.toString() }
+            .map {
+                val query = translatingInput.text.toString()
+                val languageFrom = languageFromSpinner.selectedItem as Language
+                val languageTo = languageToSpinner.selectedItem as Language
+                Text(query, languageFrom) to languageTo
+            }
 
     override fun cancellationIntent(): Observable<Unit> =
         RxView.clicks(cancelButton)
@@ -39,11 +53,18 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
             .map { Unit }
 
     override fun render(viewState: TranslationViewState) {
+        renderCommonState(viewState)
         when (viewState) {
             is EmptyTranslationViewState -> renderEmptyState(viewState)
             is LoadingTranslationViewState -> renderLoadingState(viewState)
             is ResultTranslationViewState -> renderResultState(viewState)
+            is ErrorTranslationViewState -> renderErrorState(viewState)
         }
+    }
+
+    private fun renderCommonState(viewState: TranslationViewState) {
+        translatingInput.setText(viewState.textFrom.content)
+        //TODO: selection
     }
 
     private fun renderEmptyState(viewState: EmptyTranslationViewState) {
@@ -52,6 +73,9 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         cancelButton.visibility = View.GONE
         translatingInput.isEnabled = true
         translatedText.text = ""
+        translatingInputLayout.error = null
+        languageFromSpinner.isEnabled = true
+        languageToSpinner.isEnabled = true
     }
 
     private fun renderLoadingState(viewState: LoadingTranslationViewState) {
@@ -60,6 +84,9 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         cancelButton.visibility = View.VISIBLE
         translatingInput.isEnabled = false
         translatedText.text = ""
+        translatingInputLayout.error = null
+        languageFromSpinner.isEnabled = false
+        languageToSpinner.isEnabled = false
     }
 
     private fun renderResultState(viewState: ResultTranslationViewState) {
@@ -68,5 +95,26 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         cancelButton.visibility = View.GONE
         translatingInput.isEnabled = true
         translatedText.text = viewState.result
+        translatingInputLayout.error = null
+        languageFromSpinner.isEnabled = true
+        languageToSpinner.isEnabled = true
+    }
+
+    private fun renderErrorState(viewState: ErrorTranslationViewState) {
+        translatingProgress.visibility = View.GONE
+        translateButton.isEnabled = true
+        cancelButton.visibility = View.GONE
+        translatingInput.isEnabled = true
+        translatedText.text = ""
+        translatingInputLayout.error = when (viewState.error) {
+            ErrorTranslationViewState.ErrorType.CONNECTION ->
+                getString(R.string.translation_error_connection)
+            ErrorTranslationViewState.ErrorType.EMPTY_TEXT ->
+                getString(R.string.translation_error_empty_text)
+            ErrorTranslationViewState.ErrorType.TARGET_LANGUAGE ->
+                getString(R.string.translation_error_target_language)
+        }
+        languageFromSpinner.isEnabled = true
+        languageToSpinner.isEnabled = true
     }
 }

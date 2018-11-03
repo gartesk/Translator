@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Translator</string>
+    <string name="translation_error_connection">Check your connection and try again later</string>
+    <string name="translation_error_empty_text">Input text</string>
+    <string name="translation_error_target_language">Select target language</string>
+    <string name="language_default">Select language</string>
+    <string name="button_translate">Translate</string>
+    <string name="button_cancel">Cancel</string>
 </resources>
