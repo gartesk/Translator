@@ -1,6 +1,7 @@
 package com.gartesk.translator.di
 
-import com.gartesk.translator.domain.command.MaybeCommand
+import com.gartesk.translator.domain.command.ListLanguagesCommand
+import com.gartesk.translator.domain.command.SingleCommand
 import com.gartesk.translator.domain.command.TranslateTextToLanguageCommand
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
@@ -11,6 +12,9 @@ class CommandFactory(
     private val translationRepository: TranslationRepository
 ) {
 
-    fun createTranslateStringCommand(): MaybeCommand<Pair<Text, Language>, Translation> =
+    fun createTranslateTextToLanguageCommand(): SingleCommand<Pair<Text, Language>, Translation> =
         TranslateTextToLanguageCommand(translationRepository)
+
+    fun createListLanguagesCommand(): SingleCommand<Unit, List<Language>> =
+        ListLanguagesCommand(translationRepository)
 }

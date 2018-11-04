@@ -34,7 +34,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
     override fun createPresenter(): TranslationPresenter =
         TranslationPresenter(
             (requireActivity().application as TranslatorApplication)
-                .commandFactory.createTranslateStringCommand()
+                .commandFactory.createTranslateTextToLanguageCommand()
         )
 
     override fun translationIntent(): Observable<Pair<Text, Language>> =
