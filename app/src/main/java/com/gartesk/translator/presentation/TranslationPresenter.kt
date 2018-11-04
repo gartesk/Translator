@@ -1,25 +1,41 @@
 package com.gartesk.translator.presentation
 
-import com.gartesk.translator.domain.command.MaybeCommand
+import com.gartesk.translator.domain.command.SingleCommand
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.entity.Translation
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import com.gartesk.translator.presentation.ErrorTranslationViewState.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class TranslationPresenter(
-    private val translateTextToLanguageCommand: MaybeCommand<Pair<Text, Language>, Translation>
+    private val translateTextToLanguageCommand: SingleCommand<Pair<Text, Language>, Translation>,
+    private val listLanguagesCommand: SingleCommand<Unit, List<Language>>
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
     override fun bindIntents() {
         val cancellation = intent(TranslationView::cancellationIntent)
         val translation = intent(TranslationView::translationIntent)
 
-        val viewStateEmitter = translation
+        val languagesEmitter = listLanguagesCommand.execute(Unit)
+            .toObservable()
+            .map { LanguagesLoadedTranslationViewState(it) }
+        val translationEmitter = translation
             .switchMap { (textFrom, languageTo) -> translate(textFrom, languageTo, cancellation) }
-            .observeOn(AndroidSchedulers.mainThread())
+
+        val viewStateEmitter =
+            Observable.merge<TranslationViewState>(translationEmitter, languagesEmitter)
+                .scan { oldViewState, newViewState ->
+                    return@scan when {
+                        oldViewState is LanguagesLoadedTranslationViewState ->
+                            newViewState.copyWithLanguages(oldViewState.languages)
+                        newViewState is LanguagesLoadedTranslationViewState ->
+                            oldViewState.copyWithLanguages(newViewState.languages)
+                        else -> newViewState
+                    }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(viewStateEmitter, TranslationView::render)
     }

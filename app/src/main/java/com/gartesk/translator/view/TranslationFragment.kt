@@ -31,11 +31,14 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         languageToSpinner.adapter = ArrayAdapter<Language>(requireContext(), R.layout.item_language, R.id.languageName, languages)
     }
 
-    override fun createPresenter(): TranslationPresenter =
-        TranslationPresenter(
-            (requireActivity().application as TranslatorApplication)
-                .commandFactory.createTranslateTextToLanguageCommand()
+    override fun createPresenter(): TranslationPresenter {
+        val commandFactory = (requireActivity().application as TranslatorApplication)
+            .commandFactory
+        return TranslationPresenter(
+            commandFactory.createTranslateTextToLanguageCommand(),
+            commandFactory.createListLanguagesCommand()
         )
+    }
 
     override fun translationIntent(): Observable<Pair<Text, Language>> =
         RxView.clicks(translateButton)
