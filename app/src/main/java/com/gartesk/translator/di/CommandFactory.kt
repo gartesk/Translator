@@ -1,6 +1,7 @@
 package com.gartesk.translator.di
 
 import com.gartesk.translator.domain.command.ListLanguagesCommand
+import com.gartesk.translator.domain.command.ObservableCommand
 import com.gartesk.translator.domain.command.SingleCommand
 import com.gartesk.translator.domain.command.TranslateTextToLanguageCommand
 import com.gartesk.translator.domain.entity.Language
@@ -15,6 +16,6 @@ class CommandFactory(
     fun createTranslateTextToLanguageCommand(): SingleCommand<Pair<Text, Language>, Translation> =
         TranslateTextToLanguageCommand(translationRepository)
 
-    fun createListLanguagesCommand(): SingleCommand<Unit, List<Language>> =
+    fun createListLanguagesCommand(): ObservableCommand<Unit, List<Language>> =
         ListLanguagesCommand(translationRepository)
 }

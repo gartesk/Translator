@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.gartesk.translator.R
 import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.domain.entity.Language
@@ -24,11 +23,15 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
+    private lateinit var languageFromAdapter: LanguagesAdapter
+    private lateinit var languageToAdapter: LanguagesAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val languages = arrayOf(Language.UNKNOWN_LANGUAGE, Language("en"), Language("ru"))
-        languageFromSpinner.adapter = ArrayAdapter<Language>(requireContext(), R.layout.item_language, R.id.languageName, languages)
-        languageToSpinner.adapter = ArrayAdapter<Language>(requireContext(), R.layout.item_language, R.id.languageName, languages)
+        languageFromAdapter = LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
+        languageToAdapter = LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
+        languageFromSpinner.adapter = languageFromAdapter
+        languageToSpinner.adapter = languageToAdapter
     }
 
     override fun createPresenter(): TranslationPresenter {
@@ -67,7 +70,12 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 
     private fun renderCommonState(viewState: TranslationViewState) {
         translatingInput.setText(viewState.textFrom.content)
-        //TODO: selection
+        languageFromAdapter.objects = viewState.languages.toTypedArray()
+        languageToAdapter.objects = viewState.languages.toTypedArray()
+        val languageFromIndex = viewState.languages.indexOf(viewState.textFrom.language)
+        languageFromSpinner.setSelection(languageFromIndex)
+        val languageToIndex = viewState.languages.indexOf(viewState.languageTo)
+        languageToSpinner.setSelection(languageToIndex)
     }
 
     private fun renderEmptyState(viewState: EmptyTranslationViewState) {
