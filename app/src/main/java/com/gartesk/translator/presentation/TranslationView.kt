@@ -6,7 +6,10 @@ import com.hannesdorfmann.mosby3.mvp.MvpView
 import io.reactivex.Observable
 
 interface TranslationView : MvpView {
-    fun translationIntent(): Observable<Pair<Text, Language>>
+    fun translationIntent(): Observable<Unit>
     fun cancellationIntent(): Observable<Unit>
-    fun render(viewState: TranslationViewState)
+    fun textIntent(): Observable<String>
+    fun languageFromIntent(): Observable<Language>
+    fun languageToIntent(): Observable<Language>
+    fun render(viewState: FullTranslationViewState)
 }

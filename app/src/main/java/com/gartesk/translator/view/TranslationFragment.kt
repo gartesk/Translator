@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.gartesk.translator.R
 import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.domain.entity.Language
-import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.*
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
@@ -43,32 +42,39 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         )
     }
 
-    override fun translationIntent(): Observable<Pair<Text, Language>> =
+    override fun translationIntent(): Observable<Unit> =
         RxView.clicks(translateButton)
             .debounce(1, TimeUnit.SECONDS)
-            .map {
-                val query = translatingInput.text.toString()
-                val languageFrom = languageFromSpinner.selectedItem as Language
-                val languageTo = languageToSpinner.selectedItem as Language
-                Text(query, languageFrom) to languageTo
-            }
+            .map { Unit }
 
     override fun cancellationIntent(): Observable<Unit> =
         RxView.clicks(cancelButton)
             .debounce(1, TimeUnit.SECONDS)
             .map { Unit }
 
-    override fun render(viewState: TranslationViewState) {
+    override fun textIntent(): Observable<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun languageFromIntent(): Observable<Language> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun languageToIntent(): Observable<Language> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun render(viewState: FullTranslationViewState) {
         renderCommonState(viewState)
         when (viewState) {
-            is EmptyTranslationViewState -> renderEmptyState(viewState)
+            is IdleTranslationViewState -> renderEmptyState(viewState)
             is LoadingTranslationViewState -> renderLoadingState(viewState)
             is ResultTranslationViewState -> renderResultState(viewState)
             is ErrorTranslationViewState -> renderErrorState(viewState)
         }
     }
 
-    private fun renderCommonState(viewState: TranslationViewState) {
+    private fun renderCommonState(viewState: FullTranslationViewState) {
         translatingInput.setText(viewState.textFrom.content)
         languageFromAdapter.objects = viewState.languages.toTypedArray()
         languageToAdapter.objects = viewState.languages.toTypedArray()
@@ -78,7 +84,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         languageToSpinner.setSelection(languageToIndex)
     }
 
-    private fun renderEmptyState(viewState: EmptyTranslationViewState) {
+    private fun renderEmptyState(viewState: IdleTranslationViewState) {
         translatingProgress.visibility = View.GONE
         translateButton.isEnabled = true
         cancelButton.visibility = View.GONE

@@ -3,65 +3,158 @@ package com.gartesk.translator.presentation
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 
-sealed class TranslationViewState(
-    val textFrom: Text,
-    val languageTo: Language,
-    val languages: List<Language>
-)
+interface TranslationViewState {
+    fun applyTo(viewState: FullTranslationViewState): FullTranslationViewState
+}
 
-class EmptyTranslationViewState(
+sealed class FullTranslationViewState(
+    val textFrom: Text,
+    val textTo: Text,
+    val languages: List<Language>
+) : TranslationViewState {
+
+    override fun applyTo(viewState: FullTranslationViewState): FullTranslationViewState =
+        when (viewState) {
+            is IdleTranslationViewState -> IdleTranslationViewState(
+                textFrom,
+                textTo,
+                languages
+            )
+            is LoadingTranslationViewState -> LoadingTranslationViewState(
+                textFrom,
+                textTo,
+                languages
+            )
+            is ErrorTranslationViewState -> ErrorTranslationViewState(
+                textFrom,
+                textTo,
+                viewState.error,
+                languages
+            )
+        }
+}
+
+class IdleTranslationViewState(
     textFrom: Text,
-    languageTo: Language,
+    textTo: Text,
     languages: List<Language> = emptyList()
-) : TranslationViewState(textFrom, languageTo, languages)
+) : FullTranslationViewState(textFrom, textTo, languages)
 
 class LoadingTranslationViewState(
     textFrom: Text,
-    languageTo: Language,
+    textTo: Text,
     languages: List<Language> = emptyList()
-) : TranslationViewState(textFrom, languageTo, languages)
-
-class ResultTranslationViewState(
-    textFrom: Text,
-    languageTo: Language,
-    val result: String,
-    languages: List<Language> = emptyList()
-) : TranslationViewState(textFrom, languageTo, languages)
+) : FullTranslationViewState(textFrom, textTo, languages)
 
 class ErrorTranslationViewState(
     textFrom: Text,
-    languageTo: Language,
+    textTo: Text,
     val error: ErrorType,
     languages: List<Language> = emptyList()
-) : TranslationViewState(textFrom, languageTo, languages) {
+) : FullTranslationViewState(textFrom, textTo, languages) {
     enum class ErrorType {
         CONNECTION, EMPTY_TEXT, TARGET_LANGUAGE
     }
 }
 
-class LanguagesLoadedTranslationViewState(
-    languages: List<Language>
-) : TranslationViewState(Text(""), Language.UNKNOWN_LANGUAGE, languages)
+sealed class PartialTranslationViewState : TranslationViewState
 
-fun TranslationViewState.copyWithLanguages(languages: List<Language>): TranslationViewState =
-    when (this) {
-        is EmptyTranslationViewState -> EmptyTranslationViewState(textFrom, languageTo, languages)
-        is LoadingTranslationViewState -> LoadingTranslationViewState(
-            textFrom,
-            languageTo,
-            languages
-        )
-        is ResultTranslationViewState -> ResultTranslationViewState(
-            textFrom,
-            languageTo,
-            result,
-            languages
-        )
-        is ErrorTranslationViewState -> ErrorTranslationViewState(
-            textFrom,
-            languageTo,
-            error,
-            languages
-        )
-        is LanguagesLoadedTranslationViewState -> LanguagesLoadedTranslationViewState(languages)
-    }
+class LoadedLanguagesTranslationViewState(
+    val languages: List<Language>
+) : PartialTranslationViewState() {
+
+    override fun applyTo(viewState: FullTranslationViewState): FullTranslationViewState =
+        when (viewState) {
+            is IdleTranslationViewState -> IdleTranslationViewState(
+                viewState.textFrom,
+                viewState.textTo,
+                languages
+            )
+            is LoadingTranslationViewState -> LoadingTranslationViewState(
+                viewState.textFrom,
+                viewState.textTo,
+                languages
+            )
+            is ErrorTranslationViewState -> ErrorTranslationViewState(
+                viewState.textFrom,
+                viewState.textTo,
+                viewState.error,
+                languages
+            )
+        }
+}
+
+class SelectedLanguageFromTranslationViewState(
+    val language: Language
+) : PartialTranslationViewState() {
+
+    override fun applyTo(viewState: FullTranslationViewState): FullTranslationViewState =
+        when (viewState) {
+            is IdleTranslationViewState -> IdleTranslationViewState(
+                viewState.textFrom.copy(language = language),
+                viewState.textTo,
+                viewState.languages
+            )
+            is LoadingTranslationViewState -> LoadingTranslationViewState(
+                viewState.textFrom.copy(language = language),
+                viewState.textTo,
+                viewState.languages
+            )
+            is ErrorTranslationViewState -> ErrorTranslationViewState(
+                viewState.textFrom.copy(language = language),
+                viewState.textTo,
+                viewState.error,
+                viewState.languages
+            )
+        }
+}
+
+class SelectedLanguageToTranslationViewState(
+    val language: Language
+) : PartialTranslationViewState() {
+
+    override fun applyTo(viewState: FullTranslationViewState): FullTranslationViewState =
+        when (viewState) {
+            is IdleTranslationViewState -> IdleTranslationViewState(
+                viewState.textFrom,
+                viewState.textTo.copy(language = language),
+                viewState.languages
+            )
+            is LoadingTranslationViewState -> LoadingTranslationViewState(
+                viewState.textFrom,
+                viewState.textTo.copy(language = language),
+                viewState.languages
+            )
+            is ErrorTranslationViewState -> ErrorTranslationViewState(
+                viewState.textFrom,
+                viewState.textTo.copy(language = language),
+                viewState.error,
+                viewState.languages
+            )
+        }
+}
+
+class ChangedTextTranslationViewState(
+    val text: String
+) : PartialTranslationViewState() {
+
+    override fun applyTo(viewState: FullTranslationViewState): FullTranslationViewState =
+        when (viewState) {
+            is IdleTranslationViewState -> IdleTranslationViewState(
+                viewState.textFrom.copy(content = text),
+                viewState.textTo,
+                viewState.languages
+            )
+            is LoadingTranslationViewState -> LoadingTranslationViewState(
+                viewState.textFrom.copy(content = text),
+                viewState.textTo,
+                viewState.languages
+            )
+            is ErrorTranslationViewState -> ErrorTranslationViewState(
+                viewState.textFrom.copy(content = text),
+                viewState.textTo,
+                viewState.error,
+                viewState.languages
+            )
+        }
+}
