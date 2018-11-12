@@ -64,7 +64,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun render(viewState: FullTranslationViewState) {
+    override fun render(viewState: TranslationViewState) {
         renderCommonState(viewState)
         when (viewState) {
             is IdleTranslationViewState -> renderEmptyState(viewState)
@@ -74,7 +74,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         }
     }
 
-    private fun renderCommonState(viewState: FullTranslationViewState) {
+    private fun renderCommonState(viewState: TranslationViewState) {
         translatingInput.setText(viewState.textFrom.content)
         languageFromAdapter.objects = viewState.languages.toTypedArray()
         languageToAdapter.objects = viewState.languages.toTypedArray()

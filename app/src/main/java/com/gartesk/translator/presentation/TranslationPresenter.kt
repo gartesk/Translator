@@ -13,34 +13,47 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 class TranslationPresenter(
     private val translateTextToLanguageCommand: SingleCommand<Pair<Text, Language>, Translation>,
     private val listLanguagesCommand: ObservableCommand<Unit, List<Language>>
-) : MviBasePresenter<TranslationView, FullTranslationViewState>() {
+) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
     override fun bindIntents() {
         val cancellation = intent(TranslationView::cancellationIntent)
         val translation = intent(TranslationView::translationIntent)
 
         val textEmitter = intent(TranslationView::textIntent)
-            .map { ChangedTextTranslationViewState(it) }
+            .map { ChangedTextPartialStateVisitor(it) }
         val languageFromEmitter = intent(TranslationView::languageFromIntent)
-            .map { SelectedLanguageFromTranslationViewState(it) }
+            .map { SelectedLanguageFromPartialStateVisitor(it) }
         val languageToEmitter = intent(TranslationView::languageToIntent)
-            .map { SelectedLanguageToTranslationViewState(it) }
+            .map { SelectedLanguageToPartialStateVisitor(it) }
         val languagesEmitter = listLanguagesCommand.execute(Unit)
-            .map { LoadedLanguagesTranslationViewState(it) }
+            .map { LoadedLanguagesPartialStateVisitor(it) }
+
+        val paramsChangesEmitter =
+            Observable.merge<PartialState>(
+                listOf(
+                    languagesEmitter,
+                    textEmitter,
+                    languageFromEmitter,
+                    languageToEmitter
+                )
+            )
 
         val translationEmitter = translation
-            .switchMap { (textFrom, languageTo) -> translate(textFrom, languageTo, cancellation) }
+            .map { IdleTranslationViewState() }
 
         val viewStateEmitter =
-            Observable.merge<TranslationViewState>(translationEmitter, languagesEmitter)
-                .scan { oldViewState, newViewState ->
-                    return@scan if (newViewState is PartialTranslationViewState) {
-                        oldViewState.copyWithLanguages(newViewState.languages)
-                    } else {
-                        newViewState.copyWithLanguages(oldViewState.languages)
-                    }
+            Observable.merge<TranslationViewState>(
+                listOf(
+                    translationEmitter,
+                    languagesEmitter,
+                    textEmitter,
+                    languageFromEmitter,
+                    languageToEmitter
+                )
+            )
+                .scan<TranslationViewState>(IdleTranslationViewState()) { old, new ->
+                    new.combineWith(old)
                 }
-                .cast(FullTranslationViewState::class.java)
                 .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(viewStateEmitter, TranslationView::render)
@@ -50,7 +63,7 @@ class TranslationPresenter(
         textFrom: Text,
         languageTo: Language,
         cancellation: Observable<Unit>
-    ): Observable<FullTranslationViewState> {
+    ): Observable<TranslationViewState> {
         if (textFrom.content.isEmpty()) {
             return Observable.just(
                 ErrorTranslationViewState(
@@ -72,7 +85,7 @@ class TranslationPresenter(
         return translateTextToLanguageCommand.execute(argument)
             .toObservable()
             .takeUntil(cancellation)
-            .map<FullTranslationViewState> {
+            .map<TranslationViewState> {
                 IdleTranslationViewState(textFrom, it.to)
             }
             .defaultIfEmpty(IdleTranslationViewState(textFrom, Text(language = languageTo)))
