@@ -9,6 +9,7 @@ import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import com.gartesk.translator.presentation.ErrorTranslationViewState.*
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 
 class TranslationPresenter(
     private val translateTextToLanguageCommand: SingleCommand<Pair<Text, Language>, Translation>,
@@ -29,7 +30,7 @@ class TranslationPresenter(
             .map { LoadedLanguagesPartialStateVisitor(it) }
 
         val paramsChangesEmitter =
-            Observable.merge<PartialState>(
+            Observable.merge<PartialStateVisitor>(
                 listOf(
                     languagesEmitter,
                     textEmitter,
@@ -37,64 +38,80 @@ class TranslationPresenter(
                     languageToEmitter
                 )
             )
-
-        val translationEmitter = translation
-            .map { IdleTranslationViewState() }
-
-        val viewStateEmitter =
-            Observable.merge<TranslationViewState>(
-                listOf(
-                    translationEmitter,
-                    languagesEmitter,
-                    textEmitter,
-                    languageFromEmitter,
-                    languageToEmitter
-                )
-            )
-                .scan<TranslationViewState>(IdleTranslationViewState()) { old, new ->
-                    new.combineWith(old)
+                .scan(PartialState()) { partialState, visitor ->
+                    partialState.apply(visitor)
                 }
-                .observeOn(AndroidSchedulers.mainThread())
+
+        val viewStateEmitter = Observable.combineLatest(
+            paramsChangesEmitter,
+            translation,
+            BiFunction<PartialState, Unit, TranslationViewState> { partialState, _ ->
+                IdleTranslationViewState(
+                    partialState.textFrom,
+                    Text(language = partialState.languageTo),
+                    partialState.languages
+                )
+            })
+            .concatMap { translate(it, cancellation) }
+            .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(viewStateEmitter, TranslationView::render)
     }
 
     private fun translate(
-        textFrom: Text,
-        languageTo: Language,
+        initialViewState: TranslationViewState,
         cancellation: Observable<Unit>
     ): Observable<TranslationViewState> {
-        if (textFrom.content.isEmpty()) {
+        if (initialViewState.textFrom.content.isEmpty()) {
             return Observable.just(
                 ErrorTranslationViewState(
-                    textFrom,
-                    Text(language = languageTo),
-                    ErrorType.EMPTY_TEXT
+                    initialViewState.textFrom,
+                    initialViewState.textTo,
+                    ErrorType.EMPTY_TEXT,
+                    initialViewState.languages
                 )
             )
-        } else if (languageTo == Language.UNKNOWN_LANGUAGE) {
+        } else if (initialViewState.textTo.language == Language.UNKNOWN_LANGUAGE) {
             return Observable.just(
                 ErrorTranslationViewState(
-                    textFrom,
-                    Text(language = languageTo),
-                    ErrorType.TARGET_LANGUAGE
+                    initialViewState.textFrom,
+                    initialViewState.textTo,
+                    ErrorType.TARGET_LANGUAGE,
+                    initialViewState.languages
                 )
             )
         }
-        val argument = textFrom to languageTo
+        val argument = initialViewState.textFrom to initialViewState.textTo.language
         return translateTextToLanguageCommand.execute(argument)
             .toObservable()
             .takeUntil(cancellation)
             .map<TranslationViewState> {
-                IdleTranslationViewState(textFrom, it.to)
+                IdleTranslationViewState(
+                    initialViewState.textFrom,
+                    initialViewState.textTo,
+                    initialViewState.languages
+                )
             }
-            .defaultIfEmpty(IdleTranslationViewState(textFrom, Text(language = languageTo)))
-            .startWith(LoadingTranslationViewState(textFrom, Text(language = languageTo)))
+            .defaultIfEmpty(
+                IdleTranslationViewState(
+                    initialViewState.textFrom,
+                    initialViewState.textTo,
+                    initialViewState.languages
+                )
+            )
+            .startWith(
+                LoadingTranslationViewState(
+                    initialViewState.textFrom,
+                    initialViewState.textTo,
+                    initialViewState.languages
+                )
+            )
             .onErrorReturn {
                 ErrorTranslationViewState(
-                    textFrom,
-                    Text(language = languageTo),
-                    ErrorType.CONNECTION
+                    initialViewState.textFrom,
+                    initialViewState.textTo,
+                    ErrorType.CONNECTION,
+                    initialViewState.languages
                 )
             }
     }

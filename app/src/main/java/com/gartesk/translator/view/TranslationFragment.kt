@@ -69,7 +69,6 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         when (viewState) {
             is IdleTranslationViewState -> renderEmptyState(viewState)
             is LoadingTranslationViewState -> renderLoadingState(viewState)
-            is ResultTranslationViewState -> renderResultState(viewState)
             is ErrorTranslationViewState -> renderErrorState(viewState)
         }
     }
@@ -80,7 +79,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         languageToAdapter.objects = viewState.languages.toTypedArray()
         val languageFromIndex = viewState.languages.indexOf(viewState.textFrom.language)
         languageFromSpinner.setSelection(languageFromIndex)
-        val languageToIndex = viewState.languages.indexOf(viewState.languageTo)
+        val languageToIndex = viewState.languages.indexOf(viewState.textTo.language)
         languageToSpinner.setSelection(languageToIndex)
     }
 
@@ -104,17 +103,6 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         translatingInputLayout.error = null
         languageFromSpinner.isEnabled = false
         languageToSpinner.isEnabled = false
-    }
-
-    private fun renderResultState(viewState: ResultTranslationViewState) {
-        translatingProgress.visibility = View.GONE
-        translateButton.isEnabled = true
-        cancelButton.visibility = View.GONE
-        translatingInput.isEnabled = true
-        translatedText.text = viewState.result
-        translatingInputLayout.error = null
-        languageFromSpinner.isEnabled = true
-        languageToSpinner.isEnabled = true
     }
 
     private fun renderErrorState(viewState: ErrorTranslationViewState) {
