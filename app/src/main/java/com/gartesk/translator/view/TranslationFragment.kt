@@ -10,6 +10,8 @@ import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.presentation.*
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxAdapterView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_translation.*
 import java.util.concurrent.TimeUnit
@@ -52,17 +54,17 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
             .debounce(1, TimeUnit.SECONDS)
             .map { Unit }
 
-    override fun textIntent(): Observable<String> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun textIntent(): Observable<String> =
+        RxTextView.textChanges(translatingInput)
+            .map { it.toString() }
 
-    override fun languageFromIntent(): Observable<Language> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun languageFromIntent(): Observable<Language> =
+        RxAdapterView.itemSelections(languageFromSpinner)
+            .map { languageFromAdapter.objects[it] }
 
-    override fun languageToIntent(): Observable<Language> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun languageToIntent(): Observable<Language> =
+        RxAdapterView.itemSelections(languageToSpinner)
+            .map { languageToAdapter.objects[it] }
 
     override fun render(viewState: TranslationViewState) {
         renderCommonState(viewState)
