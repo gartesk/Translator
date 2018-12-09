@@ -12,6 +12,10 @@ class LanguagesAdapter(
 
     var objects: Array<Language> = emptyArray()
         set(value) {
+            if (value.contentEquals(field)) {
+                return
+            }
+            field = value
             clear()
             addAll(*value)
         }
