@@ -8,8 +8,8 @@ import com.gartesk.translator.view.core.DelegatedMviFragment
 import com.gartesk.translator.view.core.DelegatingMviView
 
 class DelegatingLanguagesView(
-    delegatedMviFragment: DelegatedMviFragment<*, *>
-) : DelegatingMviView<LanguagesView, LanguagesPresenter>(delegatedMviFragment), LanguagesView {
+    private val translationFragment: TranslationFragment
+) : DelegatingMviView<LanguagesView, LanguagesPresenter>(translationFragment), LanguagesView {
 
     override fun createPresenter(): LanguagesPresenter {
         val commandFactory =
@@ -20,6 +20,7 @@ class DelegatingLanguagesView(
     }
 
     override fun render(viewState: LanguagesViewState) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        translationFragment.languageFromAdapter.objects = viewState.languages.toTypedArray()
+        translationFragment.languageToAdapter.objects = viewState.languages.toTypedArray()
     }
 }

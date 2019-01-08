@@ -14,6 +14,10 @@ abstract class DelegatedMviFragment<V : MvpView, P : MviPresenter<V, *>> : MviFr
 
     private val delegatingViews: MutableList<DelegatingMviView<*, *>> = mutableListOf()
 
+    protected fun registerDelegatingView(delegatingView: DelegatingMviView<*, *>) {
+        delegatingViews.add(delegatingView)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         delegatingViews.forEach { it.mviDelegate.onCreate(savedInstanceState) }

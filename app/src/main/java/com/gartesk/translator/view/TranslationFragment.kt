@@ -10,13 +10,13 @@ import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.*
-import com.hannesdorfmann.mosby3.mvi.MviFragment
+import com.gartesk.translator.view.core.DelegatedMviFragment
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_translation.*
 import java.util.concurrent.TimeUnit
 
-class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>(), TranslationView {
+class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPresenter>(), TranslationView {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,8 +24,13 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
-    private lateinit var languageFromAdapter: LanguagesAdapter
-    private lateinit var languageToAdapter: LanguagesAdapter
+    lateinit var languageFromAdapter: LanguagesAdapter
+    lateinit var languageToAdapter: LanguagesAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        registerDelegatingView(DelegatingLanguagesView(this))
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,7 +101,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
         translateButton.isEnabled = true
         cancelButton.visibility = View.GONE
         translatingInput.isEnabled = true
-        translatedText.text = ""
+        translatedText.text = viewState.textTo.content
         translatingInputLayout.error = null
         languageFromSpinner.isEnabled = true
         languageToSpinner.isEnabled = true
