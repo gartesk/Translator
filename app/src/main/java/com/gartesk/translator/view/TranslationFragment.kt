@@ -16,7 +16,8 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_translation.*
 import java.util.concurrent.TimeUnit
 
-class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPresenter>(), TranslationView {
+class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPresenter>(),
+    TranslationView {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,15 +30,16 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerDelegatingView(DelegatingLanguagesView(this))
+        registerDelegatingView(DelegatingCounterView(this))
         super.onCreate(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         languageFromAdapter =
-                LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
+            LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
         languageToAdapter =
-                LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
+            LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
         languageFromSpinner.adapter = languageFromAdapter
         languageToSpinner.adapter = languageToAdapter
     }
@@ -45,9 +47,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
     override fun createPresenter(): TranslationPresenter {
         val commandFactory = (requireActivity().application as TranslatorApplication)
             .commandFactory
-        return TranslationPresenter(
-            commandFactory.createTranslateTextToLanguageCommand()
-        )
+        return TranslationPresenter(commandFactory.createTranslateTextToLanguageCommand())
     }
 
     override fun translationIntent(): Observable<Pair<Text, Language>> =
@@ -69,6 +69,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
                 }
                 Text(contentFrom, languageFrom) to languageTo
             }
+            .share()
 
     override fun cancellationIntent(): Observable<Unit> =
         RxView.clicks(cancelButton)
@@ -79,7 +80,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         renderCommonState(viewState)
         when (viewState) {
             is IdleTranslationViewState -> renderIdleState(viewState)
-            is LoadingTranslationViewState -> renderLoadingState(viewState)
+            is LoadingTranslationViewState -> renderLoadingState()
             is ErrorTranslationViewState -> renderErrorState(viewState)
         }
     }
@@ -107,7 +108,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         languageToSpinner.isEnabled = true
     }
 
-    private fun renderLoadingState(viewState: LoadingTranslationViewState) {
+    private fun renderLoadingState() {
         translatingProgress.visibility = View.VISIBLE
         translateButton.isEnabled = false
         cancelButton.visibility = View.VISIBLE

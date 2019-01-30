@@ -10,7 +10,7 @@ android {
         targetSdkVersion Versions.targetSdk
         versionCode 1
         versionName "1.0"
-        buildConfigField 'String', 'YANDEX_API_KEY', yandexApiKey
+        buildConfigField 'String', 'SYSTRAN_API_KEY', systranApiKey
     }
     buildTypes {
         release {

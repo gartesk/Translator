@@ -1,5 +1,5 @@
 package com.gartesk.translator.presentation
 
-import com.gartesk.translator.domain.entity.Language
+import com.gartesk.translator.domain.entity.Direction
 
-class LanguagesViewState(val languages: List<Language> = emptyList())
+class LanguagesViewState(val directions: List<Direction> = emptyList())

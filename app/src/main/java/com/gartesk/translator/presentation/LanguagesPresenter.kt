@@ -1,16 +1,17 @@
 package com.gartesk.translator.presentation
 
-import com.gartesk.translator.domain.command.ObservableCommand
-import com.gartesk.translator.domain.entity.Language
+import com.gartesk.translator.domain.command.SingleCommand
+import com.gartesk.translator.domain.entity.Direction
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 class LanguagesPresenter(
-    private val listLanguagesCommand: ObservableCommand<Unit, List<Language>>
+    private val getDirectionsCommand: SingleCommand<Unit, List<Direction>>
 ) : MviBasePresenter<LanguagesView, LanguagesViewState>() {
 
     override fun bindIntents() {
-        val languagesEmitter = listLanguagesCommand.execute(Unit)
+        val languagesEmitter = getDirectionsCommand.execute(Unit)
+            .toObservable()
             .map { LanguagesViewState(it) }
             .observeOn(AndroidSchedulers.mainThread())
 
