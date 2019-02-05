@@ -5,6 +5,7 @@ import com.gartesk.translator.presentation.LanguagesPresenter
 import com.gartesk.translator.presentation.LanguagesView
 import com.gartesk.translator.presentation.LanguagesViewState
 import com.gartesk.translator.view.core.DelegatingMviView
+import kotlinx.android.synthetic.main.fragment_translation.*
 
 class DelegatingLanguagesView(
     private val translationFragment: TranslationFragment
@@ -17,6 +18,6 @@ class DelegatingLanguagesView(
     }
 
     override fun render(viewState: LanguagesViewState) {
-        //TODO: set directions
+        translationFragment.directionSelection.setDirections(viewState.directions)
     }
 }

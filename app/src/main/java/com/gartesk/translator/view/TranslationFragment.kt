@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import com.gartesk.translator.R
 import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.domain.entity.Language
@@ -25,23 +24,10 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
-    lateinit var languageFromAdapter: LanguagesAdapter
-    lateinit var languageToAdapter: LanguagesAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         registerDelegatingView(DelegatingLanguagesView(this))
         registerDelegatingView(DelegatingCounterView(this))
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        languageFromAdapter =
-            LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
-        languageToAdapter =
-            LanguagesAdapter(requireContext(), R.layout.item_language, R.id.languageName)
-        languageFromSpinner.adapter = languageFromAdapter
-        languageToSpinner.adapter = languageToAdapter
     }
 
     override fun createPresenter(): TranslationPresenter {
@@ -55,19 +41,8 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
             .debounce(1, TimeUnit.SECONDS)
             .map {
                 val contentFrom = translatingInput.text.toString()
-                val languageFromPosition = languageFromSpinner.selectedItemPosition
-                val languageFrom = if (languageFromPosition != AdapterView.INVALID_POSITION) {
-                    languageFromAdapter.objects[languageFromPosition]
-                } else {
-                    Language.UNKNOWN_LANGUAGE
-                }
-                val languageToPosition = languageToSpinner.selectedItemPosition
-                val languageTo = if (languageToPosition != AdapterView.INVALID_POSITION) {
-                    languageToAdapter.objects[languageToPosition]
-                } else {
-                    Language.UNKNOWN_LANGUAGE
-                }
-                Text(contentFrom, languageFrom) to languageTo
+                val selectedDirection = directionSelection.getSelectedDirection()
+                Text(contentFrom, selectedDirection.from) to selectedDirection.to
             }
             .share()
 
@@ -87,14 +62,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 
     private fun renderCommonState(viewState: TranslationViewState) {
         translatingInput.setText(viewState.textFrom.content)
-        val languageFromIndex = languageFromAdapter.objects.indexOf(viewState.textFrom.language)
-        if (languageFromIndex != AdapterView.INVALID_POSITION) {
-            languageFromSpinner.setSelection(languageFromIndex)
-        }
-        val languageToIndex = languageToAdapter.objects.indexOf(viewState.textTo.language)
-        if (languageToIndex != AdapterView.INVALID_POSITION) {
-            languageToSpinner.setSelection(languageToIndex)
-        }
+        directionSelection.selectDirection(viewState.textFrom.language, viewState.textTo.language)
     }
 
     private fun renderIdleState(viewState: IdleTranslationViewState) {
@@ -104,8 +72,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         translatingInput.isEnabled = true
         translatedText.text = viewState.textTo.content
         translatingInputLayout.error = null
-        languageFromSpinner.isEnabled = true
-        languageToSpinner.isEnabled = true
+        directionSelection.isEnabled = true
     }
 
     private fun renderLoadingState() {
@@ -115,8 +82,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         translatingInput.isEnabled = false
         translatedText.text = ""
         translatingInputLayout.error = null
-        languageFromSpinner.isEnabled = false
-        languageToSpinner.isEnabled = false
+        directionSelection.isEnabled = false
     }
 
     private fun renderErrorState(viewState: ErrorTranslationViewState) {
@@ -133,7 +99,6 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
             ErrorTranslationViewState.ErrorType.TARGET_LANGUAGE ->
                 getString(R.string.translation_error_target_language)
         }
-        languageFromSpinner.isEnabled = true
-        languageToSpinner.isEnabled = true
+        directionSelection.isEnabled = true
     }
 }
