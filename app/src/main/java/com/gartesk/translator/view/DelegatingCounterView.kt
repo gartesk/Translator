@@ -20,13 +20,14 @@ class DelegatingCounterView(
     }
 
     override fun counterUpdateIntent(): Observable<Text> =
-        translationFragment.translationIntent().map { it.first }
+        translationFragment.translationSuccessObservable
 
-    override fun render(viewState: CounterViewState) =
+    override fun render(viewState: CounterViewState) {
         when (viewState) {
             EmptyCounterViewState -> renderEmptyCounter()
             is SuccessCounterViewState -> renderCounter(viewState)
         }
+    }
 
     private fun renderEmptyCounter() {
         translationFragment.counterText.text = ""
@@ -34,8 +35,9 @@ class DelegatingCounterView(
     }
 
     private fun renderCounter(viewState: SuccessCounterViewState) {
-        translationFragment.counterText.text = translationFragment.resources.getQuantityText(
+        translationFragment.counterText.text = translationFragment.resources.getQuantityString(
             R.plurals.counter_text_format,
+            viewState.counter.count,
             viewState.counter.count
         )
     }

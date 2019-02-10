@@ -12,11 +12,16 @@ import com.gartesk.translator.presentation.*
 import com.gartesk.translator.view.core.DelegatedMviFragment
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_translation.*
 import java.util.concurrent.TimeUnit
 
 class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPresenter>(),
     TranslationView {
+
+    private val translationSuccessSubject = BehaviorSubject.create<Text>()
+    val translationSuccessObservable: Observable<Text> =
+        translationSuccessSubject.hide().distinct()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +49,6 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
                 val selectedDirection = directionSelection.getSelectedDirection()
                 Text(contentFrom, selectedDirection.from) to selectedDirection.to
             }
-            .share()
 
     override fun cancellationIntent(): Observable<Unit> =
         RxView.clicks(cancelButton)
@@ -63,6 +67,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
     private fun renderCommonState(viewState: TranslationViewState) {
         translatingInput.setText(viewState.textFrom.content)
         directionSelection.selectDirection(viewState.textFrom.language, viewState.textTo.language)
+        translationSuccessSubject.onNext(viewState.textFrom)
     }
 
     private fun renderIdleState(viewState: IdleTranslationViewState) {

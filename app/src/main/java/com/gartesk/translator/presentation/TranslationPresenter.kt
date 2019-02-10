@@ -18,9 +18,7 @@ class TranslationPresenter(
         val translation = intent(TranslationView::translationIntent)
 
         val viewStateEmitter = translation
-            .concatMap { (textFrom, languageTo) ->
-                translate(textFrom, languageTo, cancellation)
-            }
+            .concatMap { (textFrom, languageTo) -> translate(textFrom, languageTo, cancellation) }
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(viewStateEmitter, TranslationView::render)

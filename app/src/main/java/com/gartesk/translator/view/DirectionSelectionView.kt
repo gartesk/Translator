@@ -20,23 +20,23 @@ class DirectionSelectionView @JvmOverloads constructor(
     private val fromAdapter: LanguagesAdapter
     private val toAdapter: LanguagesAdapter
 
+    private var directions: List<Direction> = emptyList()
+
     init {
         inflate(context, R.layout.view_direction_selection, this)
         fromAdapter = LanguagesAdapter(context, R.layout.item_language, R.id.languageName)
+        languageFromSpinner.adapter = fromAdapter
         toAdapter = LanguagesAdapter(context, R.layout.item_language, R.id.languageName)
+        languageToSpinner.adapter = toAdapter
     }
-
-    private var directions: List<Direction> = listOf(
-        Direction(Language.UNKNOWN_LANGUAGE, Language.UNKNOWN_LANGUAGE)
-    )
 
     fun setDirections(directions: List<Direction>) {
         val selectedDirection = getSelectedDirection()
-        val languagesFrom = directions.map { it.from }.distinct()
+        val languagesFrom = directions.map { it.from }.distinct().filter { it != Language.UNKNOWN_LANGUAGE }
         val partialDirectionsFrom = languagesFrom.map { Direction(it, Language.UNKNOWN_LANGUAGE) }
-        val languagesTo = directions.map { it.to }.distinct()
+        val languagesTo = directions.map { it.to }.distinct().filter { it != Language.UNKNOWN_LANGUAGE }
         val partialDirectionsTo = languagesTo.map { Direction(Language.UNKNOWN_LANGUAGE, it) }
-        this.directions = listOf(Direction(Language.UNKNOWN_LANGUAGE, Language.UNKNOWN_LANGUAGE)) +
+        this.directions = listOf(Direction.UNKNOWN_DIRECTION) +
                 directions + partialDirectionsFrom + partialDirectionsTo
         fromAdapter.objects = arrayOf(Language.UNKNOWN_LANGUAGE) + languagesFrom
         toAdapter.objects = arrayOf(Language.UNKNOWN_LANGUAGE) + languagesTo
@@ -63,8 +63,10 @@ class DirectionSelectionView @JvmOverloads constructor(
     }
 
     fun getSelectedDirection(): Direction {
-        val selectedLanguageFrom = languageFromSpinner.selectedItem as Language
-        val selectedLanguageTo = languageToSpinner.selectedItem as Language
+        val selectedLanguageFrom =
+            languageFromSpinner.selectedItem as? Language ?: Language.UNKNOWN_LANGUAGE
+        val selectedLanguageTo =
+            languageToSpinner.selectedItem as? Language ?: Language.UNKNOWN_LANGUAGE
         return Direction(selectedLanguageFrom, selectedLanguageTo)
     }
 

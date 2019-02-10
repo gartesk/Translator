@@ -1,5 +1,6 @@
 package com.gartesk.translator.data
 
+import android.content.Context
 import com.gartesk.translator.BuildConfig
 import com.gartesk.translator.domain.entity.Direction
 import com.gartesk.translator.domain.entity.Language
@@ -15,16 +16,25 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-class SystranTranslationRepository : TranslationRepository {
+class SystranTranslationRepository(context: Context) : TranslationRepository {
 
     private val apiUrl = "https://api-platform.systran.net"
     private val apiKey = BuildConfig.SYSTRAN_API_KEY
+    private val packageName = context.packageName
+    private val certFingerprint = BuildConfig.CERT_FINGERPRINT
 
     private val api = Retrofit.Builder()
         .baseUrl(apiUrl)
         .client(
             OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor { chain ->
+                    val originalRequest = chain.request()
+                    val modifiedRequest = originalRequest.newBuilder()
+                        .addHeader("User-Agent", "Android")
+                        .build()
+                    chain.proceed(modifiedRequest)
+                }
+                .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
         )
         .addConverterFactory(GsonConverterFactory.create())
@@ -34,6 +44,8 @@ class SystranTranslationRepository : TranslationRepository {
 
     override fun translate(text: Text, targetLanguage: Language): Single<Text> =
         api.translate(
+            packageName,
+            certFingerprint,
             apiKey,
             text.content,
             text.language.code,
@@ -45,7 +57,7 @@ class SystranTranslationRepository : TranslationRepository {
             }
 
     override fun getDirections(): Single<List<Direction>> =
-        api.listLanguages(apiKey)
+        api.listLanguages(packageName, certFingerprint, apiKey)
             .flatMapObservable { Observable.fromIterable(it.languagePairs) }
             .map { Direction(Language(it.source), Language(it.target)) }
             .toList()
@@ -55,6 +67,8 @@ private interface SystranApi {
 
     @GET("/translation/text/translate")
     fun translate(
+        @Query("packageName") packageName: String,
+        @Query("certFingerprint") certFingerprint: String,
         @Query("key") apiKey: String,
         @Query("input") input: String,
         @Query("source") source: String?,
@@ -63,6 +77,8 @@ private interface SystranApi {
 
     @GET("/translation/supportedLanguages")
     fun listLanguages(
+        @Query("packageName") packageName: String,
+        @Query("certFingerprint") certFingerprint: String,
         @Query("key") apiKey: String
     ): Single<SupportedLanguagesResponse>
 }
