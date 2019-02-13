@@ -10,7 +10,7 @@ import com.gartesk.translator.presentation.ErrorTranslationViewState.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 class TranslationPresenter(
-    private val translateTextToLanguageCommand: SingleCommand<Pair<Text, Language>, Translation>
+    private val getTranslationCommand: SingleCommand<Pair<Text, Language>, Translation>
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
     override fun bindIntents() {
@@ -47,13 +47,14 @@ class TranslationPresenter(
             )
         }
         val argument = textFrom to languageTo
-        return translateTextToLanguageCommand.execute(argument)
+        return getTranslationCommand.execute(argument)
             .toObservable()
             .takeUntil(cancellation)
             .map<TranslationViewState> {
                 IdleTranslationViewState(
                     it.from,
-                    it.to
+                    it.to,
+                    it.counter
                 )
             }
             .defaultIfEmpty(

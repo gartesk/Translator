@@ -8,17 +8,17 @@ import com.gartesk.translator.domain.repository.TranslationRepository
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-class TranslateTextToLanguageCommand(
+class GetTranslationCommand(
     private val translationRepository: TranslationRepository,
     private val counterRepository: CounterRepository
 ) : SingleCommand<Pair<Text, Language>, Translation> {
 
     override fun execute(argument: Pair<Text, Language>): Single<Translation> =
         translationRepository.translate(argument.first, argument.second)
-            .map { Translation(argument.first, it) }
-            .flatMap {
-                counterRepository.increment(it.from)
-                    .toSingleDefault(it)
+            .flatMap { textTo ->
+                counterRepository.increment(argument.first, argument.second)
+                    .andThen(counterRepository.get(argument.first, argument.second))
+                    .map { counter -> Translation(argument.first, textTo, counter) }
             }
             .subscribeOn(Schedulers.io())
 }

@@ -12,16 +12,11 @@ import com.gartesk.translator.presentation.*
 import com.gartesk.translator.view.core.DelegatedMviFragment
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_translation.*
 import java.util.concurrent.TimeUnit
 
 class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPresenter>(),
     TranslationView {
-
-    private val translationSuccessSubject = BehaviorSubject.create<Text>()
-    val translationSuccessObservable: Observable<Text> =
-        translationSuccessSubject.hide().distinct()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,14 +26,13 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerDelegatingView(DelegatingLanguagesView(this))
-        registerDelegatingView(DelegatingCounterView(this))
         super.onCreate(savedInstanceState)
     }
 
     override fun createPresenter(): TranslationPresenter {
         val commandFactory = (requireActivity().application as TranslatorApplication)
             .commandFactory
-        return TranslationPresenter(commandFactory.createTranslateTextToLanguageCommand())
+        return TranslationPresenter(commandFactory.createGetTranslationCommand())
     }
 
     override fun translationIntent(): Observable<Pair<Text, Language>> =
@@ -67,7 +61,6 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
     private fun renderCommonState(viewState: TranslationViewState) {
         translatingInput.setText(viewState.textFrom.content)
         directionSelection.selectDirection(viewState.textFrom.language, viewState.textTo.language)
-        translationSuccessSubject.onNext(viewState.textFrom)
     }
 
     private fun renderIdleState(viewState: IdleTranslationViewState) {
@@ -78,6 +71,16 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         translatedText.text = viewState.textTo.content
         translatingInputLayout.error = null
         directionSelection.isEnabled = true
+        if (viewState.counter != null) {
+            counterText.text = resources.getQuantityString(
+                R.plurals.counter_text_format,
+                viewState.counter,
+                viewState.counter
+            )
+            counterText.visibility = View.VISIBLE
+        } else {
+            counterText.visibility = View.GONE
+        }
     }
 
     private fun renderLoadingState() {
@@ -88,6 +91,8 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         translatedText.text = ""
         translatingInputLayout.error = null
         directionSelection.isEnabled = false
+        counterText.text = ""
+        counterText.visibility = View.GONE
     }
 
     private fun renderErrorState(viewState: ErrorTranslationViewState) {
@@ -105,5 +110,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
                 getString(R.string.translation_error_target_language)
         }
         directionSelection.isEnabled = true
+        counterText.text = ""
+        counterText.visibility = View.GONE
     }
 }

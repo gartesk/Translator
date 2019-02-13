@@ -10,12 +10,9 @@ class CommandFactory(
     private val counterRepository: CounterRepository
 ) {
 
-    fun createTranslateTextToLanguageCommand(): SingleCommand<Pair<Text, Language>, Translation> =
-        TranslateTextToLanguageCommand(translationRepository, counterRepository)
+    fun createGetTranslationCommand(): SingleCommand<Pair<Text, Language>, Translation> =
+        GetTranslationCommand(translationRepository, counterRepository)
 
     fun createGetDirectionsCommand(): SingleCommand<Unit, List<Direction>> =
         GetDirectionsCommand(translationRepository)
-
-    fun createGetCounterUpdatesCommand(): ObservableCommand<Text, Counter> =
-        GetCounterUpdatesCommand(counterRepository)
 }

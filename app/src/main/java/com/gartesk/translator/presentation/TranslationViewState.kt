@@ -9,7 +9,8 @@ sealed class TranslationViewState(
 
 class IdleTranslationViewState(
     textFrom: Text = Text(),
-    textTo: Text = Text()
+    textTo: Text = Text(),
+    val counter: Int? = null
 ) : TranslationViewState(textFrom, textTo)
 
 class LoadingTranslationViewState(

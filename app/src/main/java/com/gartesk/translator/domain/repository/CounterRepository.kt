@@ -1,12 +1,12 @@
 package com.gartesk.translator.domain.repository
 
-import com.gartesk.translator.domain.entity.Counter
+import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Single
 
 interface CounterRepository {
-    fun increment(text: Text): Completable
+    fun increment(textFrom: Text, languageTo: Language): Completable
 
-    fun getUpdates(text: Text): Observable<Counter>
+    fun get(textFrom: Text, languageTo: Language): Single<Int>
 }
