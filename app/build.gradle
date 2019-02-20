@@ -26,6 +26,7 @@ dependencies {
     implementation Libs.kotlin
 //    implementation Libs.appcompat
 //    implementation Libs.material
+    implementation Libs.supportCardViewV7
     implementation Libs.rxJava
     implementation Libs.rxAndroid
     implementation Libs.rxBinding

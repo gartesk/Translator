@@ -81,6 +81,11 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         } else {
             counterText.visibility = View.GONE
         }
+        translationResultCard.visibility = if (viewState.textTo.content.isEmpty()) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
     }
 
     private fun renderLoadingState() {
@@ -93,6 +98,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         directionSelection.isEnabled = false
         counterText.text = ""
         counterText.visibility = View.GONE
+        translationResultCard.visibility = View.GONE
     }
 
     private fun renderErrorState(viewState: ErrorTranslationViewState) {
@@ -112,5 +118,6 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         directionSelection.isEnabled = true
         counterText.text = ""
         counterText.visibility = View.GONE
+        translationResultCard.visibility = View.GONE
     }
 }

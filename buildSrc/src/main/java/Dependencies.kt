@@ -20,6 +20,7 @@ object Libs {
 //    const val appcompat = "androidx.appcompat:appcompat:${Versions.androidX}"
 //    const val material = "com.google.android.material:material:${Versions.material}"
     const val supportAppcompatV7 = "com.android.support:appcompat-v7:${Versions.androidSupport}"
+    const val supportCardViewV7 = "com.android.support:cardview-v7:${Versions.androidSupport}"
     const val supportDesign = "com.android.support:design:${Versions.androidSupport}"
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
     const val rxAndroid = "io.reactivex.rxjava2:rxandroid:${Versions.rxAndroid}"
