@@ -1,13 +1,18 @@
 package com.gartesk.translator.view
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Direction
 import com.gartesk.translator.domain.entity.Language
+import kotlinx.android.synthetic.main.item_language.view.*
 import kotlinx.android.synthetic.main.view_direction_selection.view.*
 
 class DirectionSelectionView @JvmOverloads constructor(
@@ -20,32 +25,80 @@ class DirectionSelectionView @JvmOverloads constructor(
     private val fromAdapter: LanguagesAdapter
     private val toAdapter: LanguagesAdapter
 
+    private var directionsRaw: List<Direction> = emptyList()
     private var directions: List<Direction> = emptyList()
+
+    private val onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>) {
+            val selectedDirection = getSelectedDirection()
+            setDirectionsActual(directionsRaw, selectedDirection)
+            selectDirectionActual(selectedDirection.from, selectedDirection.to)
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+            val selectedDirection = getSelectedDirection()
+            setDirectionsActual(directionsRaw, selectedDirection)
+            selectDirectionActual(selectedDirection.from, selectedDirection.to)
+        }
+    }
 
     init {
         inflate(context, R.layout.view_direction_selection, this)
-        fromAdapter = LanguagesAdapter(context, R.layout.item_language, R.id.languageName)
+        fromAdapter = LanguagesAdapter(context)
         languageFromSpinner.adapter = fromAdapter
-        toAdapter = LanguagesAdapter(context, R.layout.item_language, R.id.languageName)
+        languageFromSpinner.onItemSelectedListener = onItemSelectedListener
+        toAdapter = LanguagesAdapter(context)
         languageToSpinner.adapter = toAdapter
+        languageToSpinner.onItemSelectedListener = onItemSelectedListener
     }
 
     fun setDirections(directions: List<Direction>) {
         val selectedDirection = getSelectedDirection()
-        val languagesFrom = directions.map { it.from }.distinct().filter { it != Language.UNKNOWN_LANGUAGE }
+        setDirectionsActual(directions, selectedDirection)
+        selectDirectionActual(selectedDirection.from, selectedDirection.to)
+    }
+
+    private fun setDirectionsActual(directions: List<Direction>, selectedDirection: Direction) {
+        directionsRaw = directions
+        val languagesFrom = directions
+            .map { it.from }
+            .distinct()
+            .filter { it != Language.UNKNOWN_LANGUAGE }
+            .sortedBy { it.code }
         val partialDirectionsFrom = languagesFrom.map { Direction(it, Language.UNKNOWN_LANGUAGE) }
-        val languagesTo = directions.map { it.to }.distinct().filter { it != Language.UNKNOWN_LANGUAGE }
+        val languagesTo = directions
+            .map { it.to }
+            .distinct()
+            .filter { it != Language.UNKNOWN_LANGUAGE }
+            .sortedBy { it.code }
         val partialDirectionsTo = languagesTo.map { Direction(Language.UNKNOWN_LANGUAGE, it) }
         this.directions = listOf(Direction.UNKNOWN_DIRECTION) +
-                directions + partialDirectionsFrom + partialDirectionsTo
-        fromAdapter.objects = arrayOf(Language.UNKNOWN_LANGUAGE) + languagesFrom
-        toAdapter.objects = arrayOf(Language.UNKNOWN_LANGUAGE) + languagesTo
-        selectDirection(selectedDirection.from, selectedDirection.to)
+                directionsRaw + partialDirectionsFrom + partialDirectionsTo
+        fromAdapter.objects = (listOf(Language.UNKNOWN_LANGUAGE) + languagesFrom)
+            .map {
+                val selected = it == selectedDirection.from
+                LanguageHolder(it, selected)
+            }
+            .toTypedArray()
+        toAdapter.objects = (listOf(Language.UNKNOWN_LANGUAGE) + languagesTo)
+            .map {
+                val enabled = this.directions.contains(Direction(selectedDirection.from, it))
+                val selected = it == selectedDirection.to
+                LanguageHolder(it, selected) to enabled
+            }
+            .filter { it.second }
+            .map { it.first }
+            .toTypedArray()
     }
 
     fun selectDirection(languageFrom: Language, languageTo: Language) {
-        val fromIndex = fromAdapter.objects.indexOf(languageFrom)
-        val toIndex = toAdapter.objects.indexOf(languageTo)
+        selectDirectionActual(languageFrom, languageTo)
+        setDirectionsActual(this.directions, Direction(languageFrom, languageTo))
+    }
+
+    private fun selectDirectionActual(languageFrom: Language, languageTo: Language) {
+        val fromIndex = fromAdapter.objects.indexOfFirst { it.language == languageFrom }
+        val toIndex = toAdapter.objects.indexOfFirst { it.language == languageTo }
         var fromIndexToSelect = fromIndex
         var toIndexToSelect = toIndex
         if (fromIndex != AdapterView.INVALID_POSITION) {
@@ -63,10 +116,10 @@ class DirectionSelectionView @JvmOverloads constructor(
     }
 
     fun getSelectedDirection(): Direction {
-        val selectedLanguageFrom =
-            languageFromSpinner.selectedItem as? Language ?: Language.UNKNOWN_LANGUAGE
-        val selectedLanguageTo =
-            languageToSpinner.selectedItem as? Language ?: Language.UNKNOWN_LANGUAGE
+        val selectedLanguageFrom = (languageFromSpinner.selectedItem as? LanguageHolder)?.language
+            ?: Language.UNKNOWN_LANGUAGE
+        val selectedLanguageTo = (languageToSpinner.selectedItem as? LanguageHolder)?.language
+            ?: Language.UNKNOWN_LANGUAGE
         return Direction(selectedLanguageFrom, selectedLanguageTo)
     }
 
@@ -78,18 +131,45 @@ class DirectionSelectionView @JvmOverloads constructor(
 }
 
 private class LanguagesAdapter(
-    context: Context,
-    resource: Int,
-    textViewResourceId: Int
-) : ArrayAdapter<Language>(context, resource, textViewResourceId) {
+    private val context: Context
+) : BaseAdapter() {
 
-    var objects: Array<Language> = emptyArray()
+    var objects: Array<LanguageHolder> = emptyArray()
         set(value) {
             if (value.contentEquals(field)) {
                 return
             }
             field = value
-            clear()
-            addAll(*value)
+            notifyDataSetChanged()
         }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val view = convertView ?: createView(parent)
+        view.languageName.text = objects[position].language.code
+            ?: context.getString(R.string.language_default)
+        val textColorRes = if (objects[position].selected) {
+            R.color.textPrimarySelected
+        } else {
+            R.color.textPrimary
+        }
+        view.languageName.setTextColor(ContextCompat.getColor(context, textColorRes))
+        return view
+    }
+
+    private fun createView(parent: ViewGroup?): View =
+        LayoutInflater.from(context).inflate(R.layout.item_language, parent, false)
+
+    override fun getItem(position: Int): LanguageHolder =
+        objects[position]
+
+    override fun getItemId(position: Int): Long =
+        objects[position].hashCode().toLong()
+
+    override fun getCount(): Int =
+        objects.size
 }
+
+private data class LanguageHolder(
+    val language: Language,
+    val selected: Boolean
+)
