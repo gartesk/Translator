@@ -1,10 +1,11 @@
 package com.gartesk.translator.view
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.BaseAdapter
@@ -50,6 +51,11 @@ class DirectionSelectionView @JvmOverloads constructor(
         toAdapter = LanguagesAdapter(context)
         languageToSpinner.adapter = toAdapter
         languageToSpinner.onItemSelectedListener = onItemSelectedListener
+        swapLanguageButton.setOnClickListener {
+            val selectedDirection = getSelectedDirection()
+            selectDirection(selectedDirection.to, Language.UNKNOWN_LANGUAGE)
+            selectDirection(selectedDirection.to, selectedDirection.from)
+        }
     }
 
     fun setDirections(directions: List<Direction>) {
@@ -143,16 +149,22 @@ private class LanguagesAdapter(
             notifyDataSetChanged()
         }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: createView(parent)
         view.languageName.text = objects[position].language.code
             ?: context.getString(R.string.language_default)
-        val textColorRes = if (objects[position].selected) {
-            R.color.textPrimarySelected
-        } else {
-            R.color.textPrimary
-        }
-        view.languageName.setTextColor(ContextCompat.getColor(context, textColorRes))
+        view.languageSelectedIcon.visibility = if (objects[position].selected) VISIBLE else GONE
+        view.languageSeparator.visibility = VISIBLE
+        view.languageSeparator.visibility = if (position == objects.size - 1) GONE else VISIBLE
+        return view
+    }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val view = convertView ?: createView(parent)
+        view.languageName.text = objects[position].language.code
+            ?: context.getString(R.string.language_default)
+        view.languageSelectedIcon.visibility = GONE
+        view.languageSeparator.visibility = GONE
         return view
     }
 

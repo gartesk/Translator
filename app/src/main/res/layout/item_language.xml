@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/languageHolder"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/margin_small">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/languageName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/margin_small"
+        android:layout_toStartOf="@id/languageSelectedIcon"
+        android:textColor="@color/textPrimary"
+        android:textSize="@dimen/text_small"
         tools:text="en" />
 
+    <ImageView
+        android:id="@+id/languageSelectedIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/size_list_icon"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:src="@drawable/ic_check" />
+
     <View
+        android:id="@+id/languageSeparator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/primaryDark" />
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/margin_big"
+        android:background="@color/separator" />
+</RelativeLayout>

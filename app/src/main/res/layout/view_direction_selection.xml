@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_height="@dimen/size_directions_selection"
     android:orientation="horizontal">
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/languageFromSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_gravity="center_vertical"
+        android:layout_weight="3" />
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+    <ImageView
+        android:id="@+id/swapLanguageButton"
+        android:layout_width="@dimen/size_icon"
+        android:layout_height="@dimen/size_icon"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="@dimen/padding_icon"
+        android:src="@drawable/ic_swap_horiz" />
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/languageToSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_gravity="center_vertical"
+        android:layout_weight="3" />
 </LinearLayout>

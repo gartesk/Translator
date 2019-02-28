@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="padding_icon">4dp</dimen>
+    <dimen name="size_icon">32dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_big">16dp</dimen>
+    <dimen name="text_small">16sp</dimen>
+    <dimen name="text_big">24sp</dimen>
+    <dimen name="size_list_icon">16dp</dimen>
+    <dimen name="size_directions_selection">64dp</dimen>
 </resources>
