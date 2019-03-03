@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/backgroundPrimary"
     android:orientation="vertical">
 
@@ -30,47 +31,60 @@
             android:layout_height="wrap_content"
             android:gravity="start|top"
             android:inputType="textMultiLine"
-            android:lines="3" />
+            android:lines="1"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/text_big" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/translationResultCard"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_big"
-        android:layout_marginEnd="@dimen/margin_big"
-        android:animateLayoutChanges="true"
-        android:visibility="gone"
-        app:cardBackgroundColor="@color/backgroundCard"
-        app:contentPadding="@dimen/margin_small">
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <android.support.v7.widget.CardView
+            android:id="@+id/translationResultCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_big"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_big"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:animateLayoutChanges="true"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/backgroundCard"
+            app:contentPadding="@dimen/margin_small">
 
-            <TextView
-                android:id="@+id/counterText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/translatedText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/counterText"
-                android:layout_marginTop="@dimen/margin_small"
-                android:ellipsize="end"
-                android:lines="4" />
-
-            <android.support.v4.widget.ContentLoadingProgressBar
-                android:id="@+id/translatingProgress"
-                style="?android:attr/progressBarStyle"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:visibility="gone" />
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/counterText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="@dimen/text_small" />
+
+                <TextView
+                    android:id="@+id/translatedText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/counterText"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:ellipsize="end"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="@dimen/text_big" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/translatingProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 
     <Button
         android:id="@+id/translateButton"

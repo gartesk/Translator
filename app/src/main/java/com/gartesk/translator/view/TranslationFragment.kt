@@ -3,6 +3,8 @@ package com.gartesk.translator.view
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import com.gartesk.translator.R
 import com.gartesk.translator.TranslatorApplication
@@ -64,9 +66,9 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
     }
 
     private fun renderIdleState(viewState: IdleTranslationViewState) {
-        translatingProgress.visibility = View.GONE
+        translatingProgress.visibility = GONE
         translateButton.isEnabled = true
-        cancelButton.visibility = View.GONE
+        cancelButton.visibility = GONE
         translatingInput.isEnabled = true
         translatedText.text = viewState.textTo.content
         translatingInputLayout.error = null
@@ -77,34 +79,30 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
                 viewState.counter,
                 viewState.counter
             )
-            counterText.visibility = View.VISIBLE
+            counterText.visibility = VISIBLE
         } else {
-            counterText.visibility = View.GONE
+            counterText.visibility = GONE
         }
-        translationResultCard.visibility = if (viewState.textTo.content.isEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+        translationResultCard.visibility = if (viewState.textTo.content.isEmpty()) GONE else VISIBLE
     }
 
     private fun renderLoadingState() {
-        translatingProgress.visibility = View.VISIBLE
+        translatingProgress.visibility = VISIBLE
         translateButton.isEnabled = false
-        cancelButton.visibility = View.VISIBLE
+        cancelButton.visibility = VISIBLE
         translatingInput.isEnabled = false
         translatedText.text = ""
         translatingInputLayout.error = null
         directionSelection.isEnabled = false
         counterText.text = ""
-        counterText.visibility = View.GONE
-        translationResultCard.visibility = View.GONE
+        counterText.visibility = GONE
+        translationResultCard.visibility = GONE
     }
 
     private fun renderErrorState(viewState: ErrorTranslationViewState) {
-        translatingProgress.visibility = View.GONE
+        translatingProgress.visibility = GONE
         translateButton.isEnabled = true
-        cancelButton.visibility = View.GONE
+        cancelButton.visibility = GONE
         translatingInput.isEnabled = true
         translatedText.text = ""
         translatingInputLayout.error = when (viewState.error) {
@@ -117,7 +115,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
         }
         directionSelection.isEnabled = true
         counterText.text = ""
-        counterText.visibility = View.GONE
-        translationResultCard.visibility = View.GONE
+        counterText.visibility = GONE
+        translationResultCard.visibility = GONE
     }
 }

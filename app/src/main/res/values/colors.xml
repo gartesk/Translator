@@ -4,7 +4,7 @@
     <color name="primaryDark">#303F9F</color>
     <color name="accent">#FF4081</color>
     <color name="backgroundPrimary">#FAFAFA</color>
-    <color name="backgroundCard">#F0F0F0</color>
+    <color name="backgroundCard">#F7F7F7</color>
     <color name="textPrimary">#0A0A0A</color>
     <color name="separator">#0A0A0A</color>
 </resources>
