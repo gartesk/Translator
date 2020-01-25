@@ -1,4 +1,4 @@
-package com.gartesk.translator.view
+package com.gartesk.translator.view.translation
 
 import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.presentation.LanguagesPresenter

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/translation"
+        android:icon="@drawable/ic_translate"
+        android:title="@string/menu_translation"/>
+    <item
+        android:id="@+id/stats"
+        android:icon="@drawable/ic_bar_chart"
+        android:title="@string/menu_stats"/>
+</menu>

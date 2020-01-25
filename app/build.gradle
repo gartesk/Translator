@@ -19,21 +19,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin
-//    implementation Libs.appcompat
-//    implementation Libs.material
-    implementation Libs.supportCardViewV7
     implementation Libs.rxJava
     implementation Libs.rxAndroid
+    implementation Libs.androidXAppCompat
+    implementation Libs.androidXCardView
+    implementation Libs.androidXNavigationFragment
+    implementation Libs.androidXNavigationUI
     implementation Libs.rxBinding
-//    implementation Libs.rxBindingMaterial
-    implementation Libs.mosbyMvi
-    implementation Libs.jetpackNavFragment
-    implementation Libs.jetpackNavUI
+    implementation Libs.rxBindingMaterial
+    implementation Libs.mosbyxMvi
     implementation Libs.retrofit
     implementation Libs.retrofitRxAdapter
     implementation Libs.retrofitGsonConverter

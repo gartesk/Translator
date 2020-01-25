@@ -1,9 +1,8 @@
 package com.gartesk.translator.presentation
 
+import com.gartesk.mosbyx.mvi.MviBasePresenter
 import com.gartesk.translator.domain.command.SingleCommand
 import com.gartesk.translator.domain.entity.Direction
-import com.gartesk.translator.domain.entity.Language
-import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 class LanguagesPresenter(

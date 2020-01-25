@@ -1,4 +1,4 @@
-package com.gartesk.translator.view
+package com.gartesk.translator.view.translation
 
 import android.content.Context
 import android.util.AttributeSet

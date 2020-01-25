@@ -1,7 +1,6 @@
 package com.gartesk.translator
 
 import android.app.Application
-import com.gartesk.translator.data.MockTranslationRepository
 import com.gartesk.translator.data.PrefsCounterRepository
 import com.gartesk.translator.data.SystranTranslationRepository
 import com.gartesk.translator.di.CommandFactory

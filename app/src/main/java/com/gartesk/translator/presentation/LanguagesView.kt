@@ -1,7 +1,7 @@
 package com.gartesk.translator.presentation
 
-import com.hannesdorfmann.mosby3.mvp.MvpView
+import com.gartesk.mosbyx.mvi.MviView
 
-interface LanguagesView : MvpView {
+interface LanguagesView : MviView {
     fun render(viewState: LanguagesViewState)
 }

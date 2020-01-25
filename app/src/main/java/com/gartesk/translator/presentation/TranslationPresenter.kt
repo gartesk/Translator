@@ -1,12 +1,12 @@
 package com.gartesk.translator.presentation
 
+import com.gartesk.mosbyx.mvi.MviBasePresenter
 import com.gartesk.translator.domain.command.SingleCommand
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.entity.Translation
-import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
+import com.gartesk.translator.presentation.ErrorTranslationViewState.ErrorType
 import io.reactivex.Observable
-import com.gartesk.translator.presentation.ErrorTranslationViewState.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 class TranslationPresenter(

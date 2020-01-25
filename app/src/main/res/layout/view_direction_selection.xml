@@ -4,7 +4,7 @@
     android:layout_height="@dimen/size_directions_selection"
     android:orientation="horizontal">
 
-    <android.support.v7.widget.AppCompatSpinner
+    <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/languageFromSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:padding="@dimen/padding_icon"
         android:src="@drawable/ic_swap_horiz" />
 
-    <android.support.v7.widget.AppCompatSpinner
+    <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/languageToSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

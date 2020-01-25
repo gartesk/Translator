@@ -1,4 +1,4 @@
-package com.gartesk.translator.view
+package com.gartesk.translator.view.translation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.*
 import com.gartesk.translator.view.core.DelegatedMviFragment
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_translation.*
 import java.util.concurrent.TimeUnit
@@ -38,7 +38,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
     }
 
     override fun translationIntent(): Observable<Pair<Text, Language>> =
-        RxView.clicks(translateButton)
+        translateButton.clicks()
             .debounce(1, TimeUnit.SECONDS)
             .map {
                 val contentFrom = translatingInput.text.toString()
@@ -47,7 +47,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
             }
 
     override fun cancellationIntent(): Observable<Unit> =
-        RxView.clicks(cancelButton)
+        cancelButton.clicks()
             .debounce(1, TimeUnit.SECONDS)
             .map { Unit }
 

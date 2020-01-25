@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.View
-import com.hannesdorfmann.mosby3.mvi.MviFragment
-import com.hannesdorfmann.mosby3.mvi.MviPresenter
-import com.hannesdorfmann.mosby3.mvp.MvpView
+import androidx.fragment.app.Fragment
+import com.gartesk.mosbyx.mvi.MviFragment
+import com.gartesk.mosbyx.mvi.MviPresenter
+import com.gartesk.mosbyx.mvi.MviView
 
-abstract class DelegatedMviFragment<V : MvpView, P : MviPresenter<V, *>> : MviFragment<V, P>() {
+abstract class DelegatedMviFragment<V : MviView, P : MviPresenter<V, *>> : MviFragment<V, P>() {
 
     private val delegatingViews: MutableList<DelegatingMviView<*, *>> = mutableListOf()
 
