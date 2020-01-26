@@ -11,14 +11,14 @@ import io.reactivex.schedulers.Schedulers
 class GetTranslationCommand(
     private val translationRepository: TranslationRepository,
     private val counterRepository: CounterRepository
-) : SingleCommand<Pair<Text, Language>, Translation> {
+) {
 
-    override fun execute(argument: Pair<Text, Language>): Single<Translation> =
-        translationRepository.translate(argument.first, argument.second)
+    fun execute(textFrom: Text, languageTo: Language): Single<Translation> =
+        translationRepository.translate(textFrom, languageTo)
             .flatMap { textTo ->
-                counterRepository.increment(argument.first, argument.second)
-                    .andThen(counterRepository.get(argument.first, argument.second))
-                    .map { counter -> Translation(argument.first, textTo, counter) }
+                counterRepository.increment(textFrom, languageTo)
+                    .andThen(counterRepository.get(textFrom, languageTo))
+                    .map { counter -> Translation(textFrom, textTo, counter) }
             }
             .subscribeOn(Schedulers.io())
 }

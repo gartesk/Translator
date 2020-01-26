@@ -7,9 +7,9 @@ import io.reactivex.schedulers.Schedulers
 
 class GetDirectionsCommand(
     private val translationRepository: TranslationRepository
-) : SingleCommand<Unit, List<Direction>> {
+) {
 
-    override fun execute(argument: Unit): Single<List<Direction>> =
+    fun execute(): Single<List<Direction>> =
         translationRepository.getDirections()
             .subscribeOn(Schedulers.io())
 }

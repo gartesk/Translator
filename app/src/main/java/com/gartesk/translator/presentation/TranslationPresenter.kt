@@ -1,16 +1,15 @@
 package com.gartesk.translator.presentation
 
 import com.gartesk.mosbyx.mvi.MviBasePresenter
-import com.gartesk.translator.domain.command.SingleCommand
+import com.gartesk.translator.domain.command.GetTranslationCommand
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
-import com.gartesk.translator.domain.entity.Translation
 import com.gartesk.translator.presentation.ErrorTranslationViewState.ErrorType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 class TranslationPresenter(
-    private val getTranslationCommand: SingleCommand<Pair<Text, Language>, Translation>
+    private val getTranslationCommand: GetTranslationCommand
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
     override fun bindIntents() {
@@ -46,8 +45,8 @@ class TranslationPresenter(
                 )
             )
         }
-        val argument = textFrom to languageTo
-        return getTranslationCommand.execute(argument)
+
+        return getTranslationCommand.execute(textFrom, languageTo)
             .toObservable()
             .takeUntil(cancellation)
             .map<TranslationViewState> {
