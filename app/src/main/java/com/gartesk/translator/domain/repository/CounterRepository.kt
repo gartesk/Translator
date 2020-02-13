@@ -6,7 +6,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 interface CounterRepository {
-    fun increment(textFrom: Text, languageTo: Language): Completable
+	fun increment(textFrom: Text, languageTo: Language): Completable
 
-    fun get(textFrom: Text, languageTo: Language): Single<Int>
+	fun get(textFrom: Text, languageTo: Language): Single<Int>
 }

@@ -9,16 +9,16 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class GetTranslationCommand(
-    private val translationRepository: TranslationRepository,
-    private val counterRepository: CounterRepository
+	private val translationRepository: TranslationRepository,
+	private val counterRepository: CounterRepository
 ) {
 
-    fun execute(textFrom: Text, languageTo: Language): Single<Translation> =
-        translationRepository.translate(textFrom, languageTo)
-            .flatMap { textTo ->
-                counterRepository.increment(textFrom, languageTo)
-                    .andThen(counterRepository.get(textFrom, languageTo))
-                    .map { counter -> Translation(textFrom, textTo, counter) }
-            }
-            .subscribeOn(Schedulers.io())
+	fun execute(textFrom: Text, languageTo: Language): Single<Translation> =
+		translationRepository.translate(textFrom, languageTo)
+			.flatMap { textTo ->
+				counterRepository.increment(textFrom, languageTo)
+					.andThen(counterRepository.get(textFrom, languageTo))
+					.map { counter -> Translation(textFrom, textTo, counter) }
+			}
+			.subscribeOn(Schedulers.io())
 }

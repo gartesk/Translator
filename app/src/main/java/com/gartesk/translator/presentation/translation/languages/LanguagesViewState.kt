@@ -1,4 +1,4 @@
-package com.gartesk.translator.presentation
+package com.gartesk.translator.presentation.translation.languages
 
 import com.gartesk.translator.domain.entity.Direction
 

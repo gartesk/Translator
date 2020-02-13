@@ -6,13 +6,13 @@ import com.gartesk.translator.domain.repository.CounterRepository
 import com.gartesk.translator.domain.repository.TranslationRepository
 
 class CommandFactory(
-    private val translationRepository: TranslationRepository,
-    private val counterRepository: CounterRepository
+	private val translationRepository: TranslationRepository,
+	private val counterRepository: CounterRepository
 ) {
 
-    fun createGetTranslationCommand(): GetTranslationCommand =
-        GetTranslationCommand(translationRepository, counterRepository)
+	fun createGetTranslationCommand(): GetTranslationCommand =
+		GetTranslationCommand(translationRepository, counterRepository)
 
-    fun createGetDirectionsCommand(): GetDirectionsCommand =
-        GetDirectionsCommand(translationRepository)
+	fun createGetDirectionsCommand(): GetDirectionsCommand =
+		GetDirectionsCommand(translationRepository)
 }

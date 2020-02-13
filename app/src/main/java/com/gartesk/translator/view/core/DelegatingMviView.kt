@@ -8,27 +8,27 @@ import com.gartesk.mosbyx.mvi.delegate.fragment.FragmentMviDelegate
 import com.gartesk.mosbyx.mvi.delegate.fragment.FragmentMviDelegateImpl
 
 abstract class DelegatingMviView<V : MviView, P : MviPresenter<V, *>>(
-    protected val delegatedFragment: DelegatedMviFragment<*, *>
+	protected val delegatedFragment: DelegatedMviFragment<*, *>
 ) : MviView, MviDelegateCallback<V, P> {
 
-    private var restoringViewState: Boolean = false
-    val mviDelegate: FragmentMviDelegate<V, P> by lazy {
-        FragmentMviDelegateImpl(this, delegatedFragment)
-    }
+	private var restoringViewState: Boolean = false
+	val mviDelegate: FragmentMviDelegate<V, P> by lazy {
+		FragmentMviDelegateImpl(this, delegatedFragment)
+	}
 
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringViewState = restoringViewState
-    }
+	override fun setRestoringViewState(restoringViewState: Boolean) {
+		this.restoringViewState = restoringViewState
+	}
 
-    override val mviView: V
-        get() = try {
-            this as V
-        } catch (exception: ClassCastException) {
-            val msg =
-                "Couldn't cast the View to the corresponding View interface. " +
-                        "Most likely you forgot to add " +
-                        "\"Fragment implements YourMvpViewInterface\".\""
-            Log.e(this.toString(), msg)
-            throw RuntimeException(msg, exception)
-        }
+	override val mviView: V
+		get() = try {
+			this as V
+		} catch (exception: ClassCastException) {
+			val msg =
+				"Couldn't cast the View to the corresponding View interface. " +
+						"Most likely you forgot to add " +
+						"\"Fragment implements YourMvpViewInterface\".\""
+			Log.e(this.toString(), msg)
+			throw RuntimeException(msg, exception)
+		}
 }

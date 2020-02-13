@@ -11,23 +11,23 @@ import io.reactivex.Single
 
 class PrefsCounterRepository(context: Context) : CounterRepository {
 
-    companion object {
-        private const val PREFS_NAME = "prefs.counter"
-    }
+	companion object {
+		private const val PREFS_NAME = "prefs.counter"
+	}
 
-    private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+	private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 
-    override fun increment(textFrom: Text, languageTo: Language): Completable =
-        Completable.fromAction {
-            val prefsKey = getPrefsKey(textFrom, languageTo)
-            val previousValue = prefs.getInt(prefsKey, 0)
-            val updatedValue = previousValue + 1
-            prefs.edit().putInt(prefsKey, updatedValue).apply()
-        }
+	override fun increment(textFrom: Text, languageTo: Language): Completable =
+		Completable.fromAction {
+			val prefsKey = getPrefsKey(textFrom, languageTo)
+			val previousValue = prefs.getInt(prefsKey, 0)
+			val updatedValue = previousValue + 1
+			prefs.edit().putInt(prefsKey, updatedValue).apply()
+		}
 
-    private fun getPrefsKey(textFrom: Text, languageTo: Language): String =
-        "$PREFS_NAME.${textFrom.content}.${textFrom.language.code}.${languageTo.code}"
+	private fun getPrefsKey(textFrom: Text, languageTo: Language): String =
+		"$PREFS_NAME.${textFrom.content}.${textFrom.language.code}.${languageTo.code}"
 
-    override fun get(textFrom: Text, languageTo: Language): Single<Int> =
-        Single.fromCallable { prefs.getInt(getPrefsKey(textFrom, languageTo), 0) }
+	override fun get(textFrom: Text, languageTo: Language): Single<Int> =
+		Single.fromCallable { prefs.getInt(getPrefsKey(textFrom, languageTo), 0) }
 }

@@ -6,10 +6,10 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class GetDirectionsCommand(
-    private val translationRepository: TranslationRepository
+	private val translationRepository: TranslationRepository
 ) {
 
-    fun execute(): Single<List<Direction>> =
-        translationRepository.getDirections()
-            .subscribeOn(Schedulers.io())
+	fun execute(): Single<List<Direction>> =
+		translationRepository.getDirections()
+			.subscribeOn(Schedulers.io())
 }

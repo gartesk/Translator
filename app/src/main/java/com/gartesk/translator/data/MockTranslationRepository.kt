@@ -8,11 +8,11 @@ import io.reactivex.Single
 
 class MockTranslationRepository : TranslationRepository {
 
-    override fun translate(text: Text, targetLanguage: Language): Single<Text> =
+	override fun translate(text: Text, targetLanguage: Language): Single<Text> =
 //        Single.just(Text(content = "${text.content}-${text.language.code}-${targetLanguage.code}"))
-        Single.error(RuntimeException())
+		Single.error(RuntimeException())
 
-    override fun getDirections(): Single<List<Direction>> =
+	override fun getDirections(): Single<List<Direction>> =
 //        Single.just(
 //            listOf(
 //                Direction(Language("ru"), Language("en")),
@@ -23,5 +23,5 @@ class MockTranslationRepository : TranslationRepository {
 //                Direction(Language("fr"), Language("ru"))
 //            )
 //        )
-        Single.error(RuntimeException())
+		Single.error(RuntimeException())
 }
