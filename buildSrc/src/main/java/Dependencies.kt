@@ -6,7 +6,7 @@ object Versions {
     const val rxJava = "2.2.4"
     const val rxAndroid = "2.1.1"
     const val rxBinding = "3.1.0"
-    const val mosbyX = "4.0"
+    const val mosbyX = "4.0.1"
     const val retrofit = "2.7.1"
     const val okHttp = "4.2.2"
     const val objectBox = "2.5.1"
