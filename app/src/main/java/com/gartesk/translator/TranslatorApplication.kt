@@ -1,8 +1,8 @@
 package com.gartesk.translator
 
 import android.app.Application
-import com.gartesk.translator.data.PrefsCounterRepository
-import com.gartesk.translator.data.SystranTranslationRepository
+import com.gartesk.translator.data.stats.ObjectBoxStatsRepository
+import com.gartesk.translator.data.translation.SystranTranslationRepository
 import com.gartesk.translator.di.CommandFactory
 
 class TranslatorApplication : Application() {
@@ -11,8 +11,12 @@ class TranslatorApplication : Application() {
 
 	override fun onCreate() {
 		super.onCreate()
-		val translationRepository = SystranTranslationRepository(this)
-		val counterRepository = PrefsCounterRepository(this)
-		commandFactory = CommandFactory(translationRepository, counterRepository)
+		val translationRepository =
+			SystranTranslationRepository(
+				this
+			)
+		val statsRepository =
+			ObjectBoxStatsRepository(this)
+		commandFactory = CommandFactory(translationRepository, statsRepository)
 	}
 }

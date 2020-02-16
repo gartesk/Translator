@@ -1,4 +1,4 @@
-package com.gartesk.translator.data
+package com.gartesk.translator.data.translation
 
 import android.content.Context
 import com.gartesk.translator.BuildConfig

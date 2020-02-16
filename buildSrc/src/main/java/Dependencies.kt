@@ -9,6 +9,7 @@ object Versions {
     const val mosbyX = "4.0"
     const val retrofit = "2.7.1"
     const val okHttp = "4.2.2"
+    const val objectBox = "2.5.1"
     const val kotlin = "1.3.61"
     const val gradle = "3.5.3"
     const val targetSdk = 28
@@ -36,4 +37,5 @@ object Libs {
 object Plugins {
     const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val gradle = "com.android.tools.build:gradle:${Versions.gradle}"
+    const val objectBox = "io.objectbox:objectbox-gradle-plugin:${Versions.objectBox}"
 }
