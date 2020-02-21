@@ -6,7 +6,6 @@ import com.gartesk.translator.domain.entity.Translation
 import com.gartesk.translator.domain.repository.StatsRepository
 import com.gartesk.translator.domain.repository.TranslationRepository
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 
 class GetTranslationCommand(
 	private val translationRepository: TranslationRepository,
@@ -19,5 +18,4 @@ class GetTranslationCommand(
 				statsRepository.increment(textFrom, textTo)
 					.andThen(statsRepository.get(textFrom, textTo))
 			}
-			.subscribeOn(Schedulers.io())
 }

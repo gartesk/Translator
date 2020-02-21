@@ -8,6 +8,7 @@ import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.repository.TranslationRepository
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
@@ -34,7 +35,7 @@ class SystranTranslationRepository(context: Context) : TranslationRepository {
 				.build()
 		)
 		.addConverterFactory(GsonConverterFactory.create())
-		.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+		.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
 		.build()
 		.create(SystranApi::class.java)
 
@@ -49,6 +50,7 @@ class SystranTranslationRepository(context: Context) : TranslationRepository {
 				val output = it.outputs.first()
 				Text(content = output.output, language = targetLanguage)
 			}
+			.subscribeOn(Schedulers.io())
 
 	override fun getDirections(): Single<List<Direction>> =
 		api.listLanguages(packageName)

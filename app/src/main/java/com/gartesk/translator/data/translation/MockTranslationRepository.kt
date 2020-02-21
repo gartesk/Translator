@@ -5,13 +5,15 @@ import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.repository.TranslationRepository
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 class MockTranslationRepository : TranslationRepository {
 
 	override fun translate(text: Text, targetLanguage: Language): Single<Text> =
         Single.just(Text(content = "${text.content}-${text.language.code}-${targetLanguage.code}"))
+            .subscribeOn(Schedulers.io())
 
-	override fun getDirections(): Single<List<Direction>> =
+    override fun getDirections(): Single<List<Direction>> =
         Single.just(
             listOf(
                 Direction(Language("ru"), Language("en")),
@@ -22,4 +24,5 @@ class MockTranslationRepository : TranslationRepository {
                 Direction(Language("fr"), Language("ru"))
             )
         )
+            .subscribeOn(Schedulers.io())
 }
