@@ -32,6 +32,7 @@ object Libs {
 	const val retrofitRxAdapter = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
 	const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
 	const val okHttpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okHttp}"
+	const val objectBoxRx = "io.objectbox:objectbox-rxjava:${Versions.objectBox}"
 }
 
 object Plugins {

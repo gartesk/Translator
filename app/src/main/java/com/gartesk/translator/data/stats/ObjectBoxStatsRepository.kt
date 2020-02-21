@@ -6,7 +6,9 @@ import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.entity.Translation
 import com.gartesk.translator.domain.repository.StatsRepository
 import io.objectbox.kotlin.boxFor
+import io.objectbox.rx.RxQuery
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
@@ -54,8 +56,9 @@ class ObjectBoxStatsRepository(context: Context) : StatsRepository {
 			.build()
 			.findFirst()
 
-	override fun getAll(): Single<List<Translation>> =
-		Single.fromCallable { translationBox.all.map(::mapTranslation) }
+	override fun observeAll(): Observable<List<Translation>> =
+		RxQuery.observable(translationBox.query().build())
+			.map { models -> models.map(::mapTranslation) }
 			.subscribeOn(Schedulers.io())
 
 	private fun mapTranslation(translationModel: TranslationModel): Translation =

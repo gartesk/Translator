@@ -46,4 +46,5 @@ dependencies {
     implementation Libs.retrofitRxAdapter
     implementation Libs.retrofitGsonConverter
     implementation Libs.okHttpLoggingInterceptor
+    implementation Libs.objectBoxRx
 }
