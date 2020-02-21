@@ -2,6 +2,7 @@ package com.gartesk.translator.di
 
 import com.gartesk.translator.domain.command.GetDirectionsCommand
 import com.gartesk.translator.domain.command.GetTranslationCommand
+import com.gartesk.translator.domain.command.ObserveAllStatsCommand
 import com.gartesk.translator.domain.repository.StatsRepository
 import com.gartesk.translator.domain.repository.TranslationRepository
 
@@ -15,4 +16,7 @@ class CommandFactory(
 
 	fun createGetDirectionsCommand(): GetDirectionsCommand =
 		GetDirectionsCommand(translationRepository)
+
+	fun createObserveAllStatsCommand(): ObserveAllStatsCommand =
+		ObserveAllStatsCommand(statsRepository)
 }
