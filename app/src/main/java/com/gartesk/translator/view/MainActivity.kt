@@ -12,9 +12,13 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 		navigationView.setOnNavigationItemSelectedListener {
-			when (it.itemId) {
-				R.id.translation -> navHostFragment.findNavController().navigate(R.id.actionToTranslationFragment)
-				R.id.stats -> navHostFragment.findNavController().navigate(R.id.actionToStatsFragment)
+			val currentId = navHostFragment.findNavController().currentDestination?.id
+			when {
+				it.itemId == R.id.translation && currentId != R.id.translationFragment ->
+					navHostFragment.findNavController().navigate(R.id.actionToTranslationFragment)
+
+				it.itemId == R.id.stats && currentId != R.id.statsFragment ->
+					navHostFragment.findNavController().navigate(R.id.actionToStatsFragment)
 			}
 			true
 		}
