@@ -37,6 +37,7 @@ dependencies {
     implementation Libs.rxAndroid
     implementation Libs.androidXAppCompat
     implementation Libs.androidXCardView
+    implementation Libs.androidXConstraintLayout
     implementation Libs.androidXNavigationFragment
     implementation Libs.androidXNavigationUI
     implementation Libs.rxBinding

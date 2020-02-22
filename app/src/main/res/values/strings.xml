@@ -12,4 +12,5 @@
     </plurals>
     <string name="menu_translation">Translation</string>
     <string name="menu_stats">Stats</string>
+    <string name="stats_empty_text">No statistics here… yet</string>
 </resources>

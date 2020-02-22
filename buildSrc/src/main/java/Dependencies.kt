@@ -2,6 +2,7 @@ object Versions {
 	const val androidXAppCompat = "1.2.0-alpha01"
 	const val androidXCardView = "1.0.0"
 	const val androidXNavigation = "2.2.0-rc04"
+	const val androidXConstraintLayout = "2.0.0-beta4"
 	const val material = "1.2.0-alpha03"
 	const val rxJava = "2.2.4"
 	const val rxAndroid = "2.1.1"
@@ -19,6 +20,7 @@ object Versions {
 object Libs {
 	const val androidXAppCompat = "androidx.appcompat:appcompat:${Versions.androidXAppCompat}"
 	const val androidXCardView = "androidx.cardview:cardview:${Versions.androidXCardView}"
+	const val androidXConstraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.androidXConstraintLayout}"
 	const val material = "com.google.android.material:material:${Versions.material}"
 	const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
 	const val rxAndroid = "io.reactivex.rxjava2:rxandroid:${Versions.rxAndroid}"

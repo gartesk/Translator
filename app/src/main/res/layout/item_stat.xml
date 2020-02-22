@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textFrom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_huge"
+        android:textColor="@color/textPrimary"
+        android:textSize="@dimen/text_medium"
+        app:layout_constraintEnd_toStartOf="@+id/languageFrom"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Hello" />
+
+    <TextView
+        android:id="@+id/languageFrom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_huge"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_huge"
+        android:textColor="@color/textSecondary"
+        android:textSize="@dimen/text_small"
+        app:layout_constraintBottom_toBottomOf="@+id/textFrom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textFrom"
+        app:layout_constraintTop_toTopOf="@+id/textFrom"
+        tools:text="en" />
+
+    <ImageView
+        android:id="@+id/arrowIcon"
+        android:layout_width="@dimen/size_default_icon"
+        android:layout_height="@dimen/size_default_icon"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:src="@drawable/ic_arrow_downward"
+        app:layout_constraintBottom_toTopOf="@+id/textTo"
+        app:layout_constraintEnd_toStartOf="@+id/counterText"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textFrom" />
+
+    <TextView
+        android:id="@+id/counterText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:textColor="@color/textSecondary"
+        android:textSize="@dimen/text_small"
+        app:layout_constraintBottom_toBottomOf="@+id/arrowIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/arrowIcon"
+        app:layout_constraintTop_toTopOf="@+id/arrowIcon"
+        tools:text="5 times" />
+
+    <TextView
+        android:id="@+id/textTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_huge"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:textColor="@color/textPrimary"
+        android:textSize="@dimen/text_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/languageTo"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Hola" />
+
+    <TextView
+        android:id="@+id/languageTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_huge"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:textColor="@color/textSecondary"
+        android:textSize="@dimen/text_small"
+        app:layout_constraintBottom_toBottomOf="@+id/textTo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textTo"
+        app:layout_constraintTop_toTopOf="@+id/textTo"
+        tools:text="es" />
+
+    <View
+        android:id="@+id/statSeparator"
+        android:layout_width="@dimen/match_constraint"
+        android:layout_height="1dp"
+        android:layout_marginEnd="@dimen/margin_huge"
+        android:background="@color/separator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

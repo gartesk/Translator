@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="match_constraint">0dp</dimen>
     <dimen name="padding_icon">4dp</dimen>
     <dimen name="size_icon">32dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_big">16dp</dimen>
+    <dimen name="margin_huge">32dp</dimen>
     <dimen name="text_small">16sp</dimen>
+    <dimen name="text_medium">24sp</dimen>
     <dimen name="text_big">28sp</dimen>
     <dimen name="size_list_icon">16dp</dimen>
+    <dimen name="size_default_icon">24dp</dimen>
     <dimen name="size_directions_selection">64dp</dimen>
 </resources>
