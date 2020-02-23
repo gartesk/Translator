@@ -10,8 +10,8 @@ import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.translation.*
+import com.gartesk.translator.view.commandFactory
 import com.gartesk.translator.view.core.DelegatedMviFragment
-import com.gartesk.translator.view.getCommandFactory
 import com.gartesk.translator.view.translation.languages.DelegatingLanguagesView
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
@@ -36,7 +36,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 	}
 
 	override fun createPresenter(): TranslationPresenter =
-		TranslationPresenter(getCommandFactory().createGetTranslationCommand())
+		TranslationPresenter(commandFactory.createGetTranslationCommand())
 
 	override fun translationIntent(): Observable<Pair<Text, Language>> =
 		translateButton.clicks()

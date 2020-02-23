@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
 import com.gartesk.translator.presentation.stats.*
-import com.gartesk.translator.view.getCommandFactory
+import com.gartesk.translator.view.commandFactory
 import kotlinx.android.synthetic.main.fragment_stats.*
 
 class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
@@ -29,7 +29,7 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 	}
 
 	override fun createPresenter(): StatsPresenter =
-		StatsPresenter(getCommandFactory().createObserveAllStatsCommand())
+		StatsPresenter(commandFactory.createObserveAllStatsCommand())
 
 	override fun render(viewState: StatsViewState) {
 		when (viewState) {

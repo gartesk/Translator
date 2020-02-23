@@ -4,5 +4,5 @@ import androidx.fragment.app.Fragment
 import com.gartesk.translator.TranslatorApplication
 import com.gartesk.translator.di.CommandFactory
 
-fun Fragment.getCommandFactory(): CommandFactory =
-	(requireActivity().application as TranslatorApplication).commandFactory
+val Fragment.commandFactory: CommandFactory
+	get() = (requireActivity().application as TranslatorApplication).commandFactory
