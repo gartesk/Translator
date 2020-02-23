@@ -4,38 +4,33 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:5098729912193241793",
-      "lastPropertyId": "6:5067878666588383402",
-      "name": "TranslationModel",
+      "id": "2:3402142344776449245",
+      "lastPropertyId": "5:2700377227560475501",
+      "name": "StatModel",
       "properties": [
         {
-          "id": "1:1171223097086233517",
+          "id": "1:1691489630046731511",
           "name": "id",
           "type": 6,
-          "flags": 1
+          "flags": 3
         },
         {
-          "id": "2:113578640235389700",
+          "id": "2:4417672105596686448",
           "name": "textFrom",
           "type": 9
         },
         {
-          "id": "3:8296303393612664681",
+          "id": "3:9101470946828969646",
           "name": "languageFrom",
           "type": 9
         },
         {
-          "id": "4:7845844442885353876",
+          "id": "4:9015533813940591730",
           "name": "textTo",
           "type": 9
         },
         {
-          "id": "5:1350428305594391809",
-          "name": "languageTo",
-          "type": 9
-        },
-        {
-          "id": "6:5067878666588383402",
+          "id": "5:2700377227560475501",
           "name": "counter",
           "type": 5,
           "flags": 4
@@ -44,15 +39,24 @@
       "relations": []
     }
   ],
-  "lastEntityId": "1:5098729912193241793",
+  "lastEntityId": "2:3402142344776449245",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    5098729912193241793
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    1171223097086233517,
+    113578640235389700,
+    8296303393612664681,
+    7845844442885353876,
+    1350428305594391809,
+    5067878666588383402
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

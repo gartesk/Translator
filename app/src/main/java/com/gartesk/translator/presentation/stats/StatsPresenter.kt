@@ -9,15 +9,14 @@ class StatsPresenter(private val observeAllStatsCommand: ObserveAllStatsCommand)
 
 	override fun bindIntents() {
 		val viewStateEmitter = observeAllStatsCommand.execute()
-			.map { translations ->
-				if (translations.isEmpty()) {
+			.map { stats ->
+				if (stats.isEmpty()) {
 					EmptyStatsViewState
 				} else {
-					IdleStatsViewState(translations)
+					IdleStatsViewState(stats)
 				}
 			}
 			.startWith(LoadingStatsViewState)
-			.onErrorReturn { ErrorStatsViewState }
 			.observeOn(AndroidSchedulers.mainThread())
 
 		subscribeViewState(viewStateEmitter, StatsView::render)

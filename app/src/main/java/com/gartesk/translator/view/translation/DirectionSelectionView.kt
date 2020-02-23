@@ -151,8 +151,11 @@ private class LanguagesAdapter(
 
 	override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
 		val view = convertView ?: createView(parent)
-		view.languageName.text = objects[position].language.code
-			?: context.getString(R.string.language_default)
+		view.languageName.text = if (objects[position].language == Language.UNKNOWN_LANGUAGE) {
+			context.getString(R.string.language_default)
+		} else {
+			objects[position].language.code
+		}
 		view.languageSelectedIcon.visibility = if (objects[position].selected) VISIBLE else GONE
 		view.languageSeparator.visibility = VISIBLE
 		view.languageSeparator.visibility = if (position == objects.size - 1) GONE else VISIBLE
@@ -161,8 +164,11 @@ private class LanguagesAdapter(
 
 	override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 		val view = convertView ?: createView(parent)
-		view.languageName.text = objects[position].language.code
-			?: context.getString(R.string.language_default)
+		view.languageName.text = if (objects[position].language == Language.UNKNOWN_LANGUAGE) {
+			context.getString(R.string.language_default)
+		} else {
+			objects[position].language.code
+		}
 		view.languageSelectedIcon.visibility = GONE
 		view.languageSeparator.visibility = GONE
 		return view

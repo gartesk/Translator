@@ -9,8 +9,8 @@ import io.reactivex.schedulers.Schedulers
 
 class MockTranslationRepository : TranslationRepository {
 
-	override fun translate(text: Text, targetLanguage: Language): Single<Text> =
-        Single.just(Text(content = "${text.content}-${text.language.code}-${targetLanguage.code}"))
+	override fun translate(textFrom: Text, languageTo: Language): Single<Text> =
+        Single.just(Text(content = "${textFrom.content}-${textFrom.language.code}-${languageTo.code}"))
             .subscribeOn(Schedulers.io())
 
     override fun getDirections(): Single<List<Direction>> =

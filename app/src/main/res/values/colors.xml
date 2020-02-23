@@ -7,5 +7,5 @@
     <color name="backgroundCard">#F7F7F7</color>
     <color name="textPrimary">#0A0A0A</color>
     <color name="textSecondary">#AA0A0A0A</color>
-    <color name="separator">#0A0A0A</color>
+    <color name="separator">#660A0A0A</color>
 </resources>

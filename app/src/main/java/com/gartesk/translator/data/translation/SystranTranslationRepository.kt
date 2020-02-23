@@ -39,16 +39,16 @@ class SystranTranslationRepository(context: Context) : TranslationRepository {
 		.build()
 		.create(SystranApi::class.java)
 
-	override fun translate(text: Text, targetLanguage: Language): Single<Text> =
+	override fun translate(textFrom: Text, languageTo: Language): Single<Text> =
 		api.translate(
 			packageName,
-			text.content,
-			text.language.code,
-			targetLanguage.code ?: throw IllegalArgumentException("Target language is null")
+			textFrom.content,
+			if (textFrom.language == Language.UNKNOWN_LANGUAGE) null else textFrom.language.code,
+			languageTo.code
 		)
 			.map {
 				val output = it.outputs.first()
-				Text(content = output.output, language = targetLanguage)
+				Text(content = output.output, language = languageTo)
 			}
 			.subscribeOn(Schedulers.io())
 

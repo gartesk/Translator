@@ -1,10 +1,10 @@
 package com.gartesk.translator.domain.entity
 
-data class Language(val code: String? = null) {
+data class Language(val code: String) {
 
 	companion object {
-		val UNKNOWN_LANGUAGE = Language()
+		val UNKNOWN_LANGUAGE = Language(code = "UNKNOWN")
 	}
 
-	val isUnknown: Boolean = code == null
+	val isUnknown: Boolean = this == UNKNOWN_LANGUAGE
 }

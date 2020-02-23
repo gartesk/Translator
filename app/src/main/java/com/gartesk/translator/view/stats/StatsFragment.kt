@@ -35,25 +35,18 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 		when (viewState) {
 			is IdleStatsViewState -> renderIdleState(viewState)
 			EmptyStatsViewState -> renderEmptyState()
-			ErrorStatsViewState -> renderErrorState()
 			LoadingStatsViewState -> renderLoadingState()
 		}
 	}
 
 	private fun renderIdleState(viewState: IdleStatsViewState) {
 		statsList.visibility = VISIBLE
-		adapter.items = viewState.translations
+		adapter.items = viewState.stats
 		statsEmptyText.visibility = GONE
 		statsProgress.visibility = GONE
 	}
 
 	private fun renderEmptyState() {
-		statsList.visibility = GONE
-		statsEmptyText.visibility = VISIBLE
-		statsProgress.visibility = GONE
-	}
-
-	private fun renderErrorState() {
 		statsList.visibility = GONE
 		statsEmptyText.visibility = VISIBLE
 		statsProgress.visibility = GONE
