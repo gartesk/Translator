@@ -7,3 +7,7 @@ data class Stat(val from: Text, val counters: List<Counter>) {
 
 val Stat.totalCounter: Int
 	get() = counters.sumBy { it.value }
+
+val List<Stat>.languages: List<Language>
+	get() = map { it.from.language }
+		.distinct()

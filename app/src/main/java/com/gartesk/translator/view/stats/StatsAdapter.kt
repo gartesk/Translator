@@ -19,8 +19,18 @@ class StatsAdapter : RecyclerView.Adapter<StatViewHolder>() {
 
 	var items: List<Stat> = emptyList()
 		set(value) {
+			val oldSize = itemCount
 			field = value
-			notifyDataSetChanged()
+			val newSize = itemCount
+			previousExpandedPosition = null
+			currentExpandedPosition = null
+			if (oldSize > newSize) {
+				notifyItemRangeChanged(0, newSize)
+				notifyItemRangeRemoved(newSize, oldSize - newSize)
+			} else {
+				notifyItemRangeChanged(0, oldSize)
+				notifyItemRangeInserted(oldSize, newSize - oldSize)
+			}
 		}
 
 	private var previousExpandedPosition: Int? = null

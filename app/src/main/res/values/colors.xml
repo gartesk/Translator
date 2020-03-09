@@ -5,7 +5,11 @@
     <color name="accent">#FF4081</color>
     <color name="backgroundPrimary">#FAFAFA</color>
     <color name="backgroundCard">#F7F7F7</color>
+    <color name="backgroundChipPrimary">#DEDEDE</color>
+    <color name="backgroundChipSelected">@color/primary</color>
     <color name="textPrimary">#0A0A0A</color>
     <color name="textSecondary">#AA0A0A0A</color>
+    <color name="textChipPrimary">@color/textPrimary</color>
+    <color name="textChipSelected">#FAFAFA</color>
     <color name="separator">#660A0A0A</color>
 </resources>

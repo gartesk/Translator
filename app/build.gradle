@@ -40,6 +40,7 @@ dependencies {
     implementation Libs.androidXConstraintLayout
     implementation Libs.androidXNavigationFragment
     implementation Libs.androidXNavigationUI
+    implementation Libs.material
     implementation Libs.rxBinding
     implementation Libs.rxBindingMaterial
     implementation Libs.mosbyxMvi
