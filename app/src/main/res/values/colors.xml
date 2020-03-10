@@ -12,4 +12,5 @@
     <color name="textChipPrimary">@color/textPrimary</color>
     <color name="textChipSelected">#FAFAFA</color>
     <color name="separator">#660A0A0A</color>
+    <color name="icon">#FF0A0A0A</color>
 </resources>

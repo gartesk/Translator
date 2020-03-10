@@ -19,4 +19,9 @@
     <style name="FilterChipTextAppearance">
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
+
+    <style name="TranslationTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/separator</item>
+        <item name="boxStrokeWidth">@dimen/outline_width</item>
+    </style>
 </resources>

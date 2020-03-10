@@ -14,7 +14,7 @@
                 android:pivotY="12">
                 <path
                     android:name="path"
-                    android:fillColor="#FF0A0A0A"
+                    android:fillColor="@color/icon"
                     android:pathData="M 12 8 L 6 14 L 7.41 15.41 L 12 10.83 L 16.59 15.41 L 18 14 Z"
                     android:strokeWidth="1"/>
             </group>

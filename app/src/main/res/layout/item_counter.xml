@@ -52,6 +52,7 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="1dp"
         android:layout_marginStart="@dimen/margin_big"
+        android:layout_marginEnd="@dimen/margin_tiny"
         android:background="@color/separator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

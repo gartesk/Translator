@@ -15,4 +15,5 @@
     <dimen name="size_default_icon">24dp</dimen>
     <dimen name="size_directions_selection">64dp</dimen>
     <dimen name="stats_filters_elevation">2dp</dimen>
+    <dimen name="outline_width">1dp</dimen>
 </resources>

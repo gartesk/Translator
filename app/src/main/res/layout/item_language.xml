@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/languageHolder"
     android:layout_width="match_parent"
@@ -9,30 +10,34 @@
         android:id="@+id/languageName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
         android:layout_margin="@dimen/margin_small"
-        android:layout_toStartOf="@id/languageSelectedIcon"
         android:textColor="@color/textPrimary"
         android:textSize="@dimen/text_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="en" />
 
     <ImageView
         android:id="@+id/languageSelectedIcon"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/size_list_icon"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
-        android:src="@drawable/ic_check" />
+        android:src="@drawable/ic_check"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@+id/languageName"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/languageSeparator"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/match_constraint"
         android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/margin_big"
-        android:background="@color/separator" />
-</RelativeLayout>
+        android:background="@color/separator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

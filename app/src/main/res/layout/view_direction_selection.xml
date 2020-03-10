@@ -9,7 +9,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="3" />
+        android:layout_weight="3"
+        android:background="@drawable/bg_direction_selection"
+        android:foreground="?android:attr/selectableItemBackground" />
 
     <ImageView
         android:id="@+id/swapLanguageButton"
@@ -27,5 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="3" />
+        android:layout_weight="3"
+        android:background="@drawable/bg_direction_selection"
+        android:foreground="?android:attr/selectableItemBackground" />
 </LinearLayout>
