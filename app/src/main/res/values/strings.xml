@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Translator</string>
+    <string name="translate_label">Translate</string>
     <string name="translation_error_connection">Check your connection and try again later</string>
     <string name="translation_error_empty_text">Input text</string>
     <string name="translation_error_target_language">Select target language</string>

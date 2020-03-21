@@ -1,8 +1,10 @@
 package com.gartesk.translator.view
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavArgument
 import androidx.navigation.fragment.findNavController
 import com.gartesk.translator.R
 import kotlinx.android.synthetic.main.activity_main.*
@@ -14,6 +16,9 @@ class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
+
+		initNavGraph()
+
 		navigationView.setOnNavigationItemSelectedListener {
 			val currentId = navHostFragment.findNavController().currentDestination?.id
 			when {
@@ -25,6 +30,21 @@ class MainActivity : AppCompatActivity() {
 			}
 			true
 		}
+	}
+
+	private fun initNavGraph() {
+		val navController = navHostFragment.findNavController()
+		val navInflater = navController.navInflater
+		val graph = navInflater.inflate(R.navigation.nav_graph)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			val textToProcess = intent?.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
+			val textToProcessArgument = NavArgument.Builder()
+				.setDefaultValue(textToProcess)
+				.setIsNullable(true)
+				.build()
+			graph.addArgument(Intent.EXTRA_PROCESS_TEXT, textToProcessArgument)
+		}
+		navController.graph = graph
 	}
 
 	override fun onBackPressed() {

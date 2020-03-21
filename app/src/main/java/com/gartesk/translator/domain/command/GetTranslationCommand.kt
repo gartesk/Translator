@@ -15,9 +15,10 @@ class GetTranslationCommand(
 
 	fun execute(textFrom: Text, languageTo: Language): Single<Translation> =
 		translationRepository.translate(textFrom, languageTo)
-			.flatMap { textTo ->
-				statsRepository.increment(textFrom, languageTo)
-					.andThen(statsRepository.get(textFrom))
+			.flatMap { (languageFrom, textTo) ->
+				val updatedTextFrom = textFrom.copy(language = languageFrom)
+				statsRepository.increment(updatedTextFrom, languageTo)
+					.andThen(statsRepository.get(updatedTextFrom))
 					.map { it.toTranslation(textTo.content, languageTo) }
 			}
 }

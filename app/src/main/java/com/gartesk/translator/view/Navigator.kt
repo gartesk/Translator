@@ -2,6 +2,7 @@ package com.gartesk.translator.view
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
@@ -21,7 +22,16 @@ class Navigator(private val context: Context) {
 		return if (text != null && languageFrom != null && languageTo != null) {
 			Text(content = text, language = Language(code = languageFrom)) to Language(code = languageTo)
 		} else {
-			null
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				val textToProcess = bundle?.getCharSequence(Intent.EXTRA_PROCESS_TEXT)
+				if (textToProcess != null) {
+					Text(content = textToProcess.toString(), language = Language.UNKNOWN_LANGUAGE) to Language.UNKNOWN_LANGUAGE
+				} else {
+					null
+				}
+			} else {
+				null
+			}
 		}
 	}
 

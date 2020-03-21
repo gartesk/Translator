@@ -7,17 +7,24 @@ import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.translation.ErrorTranslationViewState.ErrorType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.subjects.PublishSubject
 
 class TranslationPresenter(
 	private val getTranslationCommand: GetTranslationCommand
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
+	private val cancellationRelay = PublishSubject.create<Unit>()
+	private var cancellationDisposable: Disposable? = null
+
 	override fun bindIntents() {
 		val cancellation = intent(TranslationView::cancellationIntent)
 		val translation = intent(TranslationView::translationIntent)
 
+		cancellationDisposable = cancellation.subscribe { cancellationRelay.onNext(Unit) }
+
 		val viewStateEmitter = translation
-			.concatMap { (textFrom, languageTo) -> translate(textFrom, languageTo, cancellation) }
+			.concatMap { (textFrom, languageTo) -> translate(textFrom, languageTo) }
 			.observeOn(AndroidSchedulers.mainThread())
 
 		subscribeViewState(viewStateEmitter, TranslationView::render)
@@ -25,8 +32,7 @@ class TranslationPresenter(
 
 	private fun translate(
 		textFrom: Text,
-		languageTo: Language,
-		cancellation: Observable<Unit>
+		languageTo: Language
 	): Observable<TranslationViewState> {
 		if (textFrom.content.isEmpty()) {
 			return Observable.just(
@@ -48,7 +54,7 @@ class TranslationPresenter(
 
 		return getTranslationCommand.execute(textFrom, languageTo)
 			.toObservable()
-			.takeUntil(cancellation)
+			.takeUntil(cancellationRelay)
 			.map<TranslationViewState> {
 				IdleTranslationViewState(
 					it.from,
@@ -75,5 +81,10 @@ class TranslationPresenter(
 					ErrorType.CONNECTION
 				)
 			}
+	}
+
+	override fun unbindIntents() {
+		super.unbindIntents()
+		cancellationDisposable?.dispose()
 	}
 }
