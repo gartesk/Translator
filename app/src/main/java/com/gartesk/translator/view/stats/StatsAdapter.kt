@@ -9,13 +9,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.gartesk.translator.R
+import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Stat
+import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.domain.entity.totalCounter
 import kotlinx.android.synthetic.main.item_counter.view.*
 import kotlinx.android.synthetic.main.item_stat.view.*
 import kotlinx.android.synthetic.main.item_stat.view.counterText
 
-class StatsAdapter : RecyclerView.Adapter<StatViewHolder>() {
+class StatsAdapter(
+	private val onCounterClick: (Text, Language) -> Unit
+) : RecyclerView.Adapter<StatViewHolder>() {
 
 	var items: List<Stat> = emptyList()
 		set(value) {
@@ -39,7 +43,7 @@ class StatsAdapter : RecyclerView.Adapter<StatViewHolder>() {
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatViewHolder {
 		val itemView = LayoutInflater.from(parent.context)
 			.inflate(R.layout.item_stat, parent, false)
-		return StatViewHolder(itemView)
+		return StatViewHolder(onCounterClick, itemView)
 	}
 
 	override fun getItemCount(): Int = items.size
@@ -64,7 +68,10 @@ class StatsAdapter : RecyclerView.Adapter<StatViewHolder>() {
 	}
 }
 
-class StatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class StatViewHolder(
+	private val onCounterClick: (Text, Language) -> Unit,
+	itemView: View
+) : RecyclerView.ViewHolder(itemView) {
 
 	fun bind(stat: Stat, expanded: Boolean, changedExpansionState: Boolean, expandTrigger: () -> Unit) {
 		itemView.textFrom.text = stat.from.content
@@ -72,7 +79,7 @@ class StatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 		itemView.counterText.text = stat.totalCounter.toString()
 		itemView.countersContainer.removeAllViews()
 		stat.counters.forEach { statCounter ->
-			bindCounterView(statCounter, itemView.countersContainer)
+			bindCounterView(stat.from, statCounter, itemView.countersContainer)
 		}
 
 		if (expanded) {
@@ -97,9 +104,10 @@ class StatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 		itemView.setOnClickListener { expandTrigger() }
 	}
 
-	private fun bindCounterView(statCounter: Stat.Counter, container: ViewGroup) {
+	private fun bindCounterView(text: Text, statCounter: Stat.Counter, container: ViewGroup) {
 		val counterView = LayoutInflater.from(container.context)
 			.inflate(R.layout.item_counter, container, false)
+		counterView.setOnClickListener { onCounterClick(text, statCounter.language) }
 		counterView.languageTo.text = statCounter.language.code
 		counterView.counterText.text = statCounter.value.toString()
 		container.addView(counterView)

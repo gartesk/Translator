@@ -9,10 +9,14 @@
         android:id="@+id/translationFragment"
         android:name="com.gartesk.translator.view.translation.TranslationFragment"
         android:label="TranslationFragment"
-        tools:layout="@layout/fragment_translation" >
+        tools:layout="@layout/fragment_translation">
         <action
             android:id="@+id/actionToStatsFragment"
             app:destination="@id/statsFragment" />
+        <argument
+            android:name="text"
+            android:defaultValue="@null"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/statsFragment"

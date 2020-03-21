@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Language
+import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.stats.*
 import com.gartesk.translator.view.commandFactory
+import com.gartesk.translator.view.navigator
 import com.google.android.material.chip.Chip
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -29,8 +31,12 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		adapter = StatsAdapter()
+		adapter = StatsAdapter(::navigateToTranslation)
 		statsList.adapter = adapter
+	}
+
+	private fun navigateToTranslation(text: Text, languageTo: Language) {
+		navigator.openTranslation(text, languageTo)
 	}
 
 	override fun createPresenter(): StatsPresenter =

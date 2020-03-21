@@ -6,18 +6,19 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
+import com.gartesk.translator.domain.entity.Direction
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.translation.*
 import com.gartesk.translator.view.commandFactory
-import com.gartesk.translator.view.core.DelegatedMviFragment
-import com.gartesk.translator.view.translation.languages.DelegatingLanguagesView
+import com.gartesk.translator.view.navigator
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_translation.*
 
-class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPresenter>(),
+class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>(),
 	TranslationView {
 
 	override fun onCreateView(
@@ -26,15 +27,6 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 		savedInstanceState: Bundle?
 	): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		registerDelegatingView(
-			DelegatingLanguagesView(
-				this
-			)
-		)
-		super.onCreate(savedInstanceState)
-	}
-
 	override fun createPresenter(): TranslationPresenter =
 		TranslationPresenter(commandFactory.createGetTranslationCommand())
 
@@ -42,8 +34,16 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 		translateButton.clicks()
 			.map {
 				val contentFrom = translatingInput.text.toString()
-				val selectedDirection = directionSelection.getSelectedDirection()
+				val selectedDirection = languagesLayout.getSelectedDirection()
 				Text(contentFrom, selectedDirection.from) to selectedDirection.to
+			}
+			.let {
+				val initialTranslation = navigator.getArguments(arguments)
+				if (initialTranslation != null) {
+					it.startWith(initialTranslation)
+				} else {
+					it
+				}
 			}
 
 	override fun cancellationIntent(): Observable<Unit> =
@@ -61,7 +61,9 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 
 	private fun renderCommonState(viewState: TranslationViewState) {
 		translatingInput.setText(viewState.textFrom.content)
-		directionSelection.selectDirection(viewState.textFrom.language, viewState.textTo.language)
+		languagesLayout.setSelectedDirection(
+			Direction(viewState.textFrom.language, viewState.textTo.language)
+		)
 	}
 
 	private fun renderIdleState(viewState: IdleTranslationViewState) {
@@ -71,7 +73,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 		translatingInput.isEnabled = true
 		translatedText.text = viewState.textTo.content
 		translatingInputLayout.error = null
-		directionSelection.isEnabled = true
+		languagesLayout.isEnabled = true
 		if (viewState.counter != null) {
 			counterText.text = resources.getQuantityString(
 				R.plurals.counter_text_format,
@@ -92,7 +94,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 		translatingInput.isEnabled = false
 		translatedText.text = ""
 		translatingInputLayout.error = null
-		directionSelection.isEnabled = false
+		languagesLayout.isEnabled = false
 		counterText.text = ""
 		counterText.visibility = GONE
 		translationResultCard.visibility = GONE
@@ -112,7 +114,7 @@ class TranslationFragment : DelegatedMviFragment<TranslationView, TranslationPre
 			ErrorTranslationViewState.ErrorType.TARGET_LANGUAGE ->
 				getString(R.string.translation_error_target_language)
 		}
-		directionSelection.isEnabled = true
+		languagesLayout.isEnabled = true
 		counterText.text = ""
 		counterText.visibility = GONE
 		translationResultCard.visibility = GONE
