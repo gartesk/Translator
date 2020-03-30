@@ -19,7 +19,7 @@ import com.gartesk.translator.view.commandFactory
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.item_language.view.*
-import kotlinx.android.synthetic.main.view_direction_selection.view.*
+import kotlinx.android.synthetic.main.view_languages.view.*
 
 class LanguagesLayout @JvmOverloads constructor(
 	context: Context,
@@ -45,7 +45,7 @@ class LanguagesLayout @JvmOverloads constructor(
 	}
 
 	init {
-		inflate(context, R.layout.view_direction_selection, this)
+		inflate(context, R.layout.view_languages, this)
 
 		fromAdapter = LanguagesAdapter(context)
 		languageFromSpinner.adapter = fromAdapter

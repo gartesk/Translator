@@ -24,6 +24,7 @@
         android:layout_marginStart="@dimen/margin_big"
         android:layout_marginTop="@dimen/margin_big"
         android:layout_marginEnd="@dimen/margin_big"
+        app:boxStrokeColor="@color/text_input_box"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
