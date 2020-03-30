@@ -1,13 +1,17 @@
 package com.gartesk.translator.view
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.core.os.bundleOf
+import androidx.navigation.NavArgument
+import androidx.navigation.fragment.findNavController
+import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
+import kotlinx.android.synthetic.main.activity_main.*
 
-class Navigator(private val context: Context) {
+class Navigator(private val activity: MainActivity) {
 
 	companion object {
 		private const val KEY_TEXT = "translation.text"
@@ -15,32 +19,75 @@ class Navigator(private val context: Context) {
 		private const val KEY_LANGUAGE_TO = "translation.languageTo"
 	}
 
-	fun getArguments(bundle: Bundle?): Pair<Text, Language>? {
-		val text = bundle?.getString(KEY_TEXT)
-		val languageFrom = bundle?.getString(KEY_LANGUAGE_FROM)
-		val languageTo = bundle?.getString(KEY_LANGUAGE_TO)
-		return if (text != null && languageFrom != null && languageTo != null) {
-			Text(content = text, language = Language(code = languageFrom)) to Language(code = languageTo)
-		} else {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				val textToProcess = bundle?.getCharSequence(Intent.EXTRA_PROCESS_TEXT)
-				if (textToProcess != null) {
-					Text(content = textToProcess.toString(), language = Language.UNKNOWN_LANGUAGE) to Language.UNKNOWN_LANGUAGE
-				} else {
-					null
-				}
-			} else {
-				null
+	private val navController = activity.navHostFragment.findNavController()
+	private val navigationView = activity.navigationView
+
+	init {
+		initNavGraph()
+		initNavigationView()
+	}
+
+	private fun initNavGraph() {
+		val intent = activity.intent
+		val navInflater = navController.navInflater
+		val graph = navInflater.inflate(R.navigation.nav_graph)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			val textToProcess = intent?.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
+			val textToProcessArgument = NavArgument.Builder()
+				.setDefaultValue(textToProcess)
+				.setIsNullable(true)
+				.build()
+			graph.addArgument(KEY_TEXT, textToProcessArgument)
+		}
+		navController.graph = graph
+	}
+
+	private fun initNavigationView() {
+		navigationView.setOnNavigationItemSelectedListener {
+			val currentId = navController.currentDestination?.id
+			when {
+				it.itemId == R.id.translation && currentId != R.id.translationFragment ->
+					navController.navigate(R.id.actionToTranslationFragment)
+
+				it.itemId == R.id.stats && currentId != R.id.statsFragment ->
+					navController.navigate(R.id.actionToStatsFragment)
 			}
+			true
+		}
+	}
+
+	fun onNewIntent(intent: Intent) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			val textToProcess: CharSequence? = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
+			val bundle = bundleOf(KEY_TEXT to textToProcess)
+			openTranslationInternal(bundle)
 		}
 	}
 
 	fun openTranslation(text: Text, languageTo: Language) {
-		val intent = Intent(context, MainActivity::class.java).apply {
-			putExtra(KEY_TEXT, text.content)
-			putExtra(KEY_LANGUAGE_FROM, text.language.code)
-			putExtra(KEY_LANGUAGE_TO, languageTo.code)
+		val bundle = bundleOf(
+			KEY_TEXT to text.content,
+			KEY_LANGUAGE_FROM to text.language.code,
+			KEY_LANGUAGE_TO to languageTo.code
+		)
+		openTranslationInternal(bundle)
+	}
+
+	private fun openTranslationInternal(bundle: Bundle) {
+		navController.navigate(R.id.actionToTranslationFragment, bundle)
+		activity.navigationView.selectedItemId = R.id.translation
+	}
+
+	fun getArguments(bundle: Bundle?): Pair<Text, Language>? {
+		val textContent = bundle?.getString(KEY_TEXT)
+		val languageFromCode = bundle?.getString(KEY_LANGUAGE_FROM)
+		val languageToCode = bundle?.getString(KEY_LANGUAGE_TO)
+		return if (textContent != null) {
+			val languageFrom = if (languageFromCode != null) Language(languageFromCode) else Language.UNKNOWN_LANGUAGE
+			val languageTo = if (languageToCode != null) Language(languageToCode) else Language.UNKNOWN_LANGUAGE
+			Text(content = textContent, language = languageFrom) to languageTo
+		} else {
+			null
 		}
-		context.startActivity(intent)
 	}
 }
