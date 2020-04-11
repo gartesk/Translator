@@ -1,6 +1,7 @@
 package com.gartesk.translator.presentation.translation
 
 import com.gartesk.mosbyx.mvi.MviBasePresenter
+import com.gartesk.translator.domain.command.GetDefaultLanguageCommand
 import com.gartesk.translator.domain.command.GetTranslationCommand
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
@@ -11,7 +12,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 
 class TranslationPresenter(
-	private val getTranslationCommand: GetTranslationCommand
+	private val getTranslationCommand: GetTranslationCommand,
+	private val getDefaultLanguageCommand: GetDefaultLanguageCommand
 ) : MviBasePresenter<TranslationView, TranslationViewState>() {
 
 	private val cancellationRelay = PublishSubject.create<Unit>()
@@ -42,17 +44,14 @@ class TranslationPresenter(
 					ErrorType.EMPTY_TEXT
 				)
 			)
-		} else if (languageTo == Language.UNKNOWN_LANGUAGE) {
-			return Observable.just(
-				ErrorTranslationViewState(
-					textFrom,
-					Text(language = languageTo),
-					ErrorType.TARGET_LANGUAGE
-				)
-			)
 		}
 
-		return getTranslationCommand.execute(textFrom, languageTo)
+		return if (languageTo == Language.UNKNOWN_LANGUAGE) {
+			getDefaultLanguageCommand.execute()
+				.flatMap { getTranslationCommand.execute(textFrom, it) }
+		} else {
+			getTranslationCommand.execute(textFrom, languageTo)
+		}
 			.toObservable()
 			.takeUntil(cancellationRelay)
 			.map<TranslationViewState> {

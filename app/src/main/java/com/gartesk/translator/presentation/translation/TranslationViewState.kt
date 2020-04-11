@@ -24,6 +24,6 @@ class ErrorTranslationViewState(
 	val error: ErrorType
 ) : TranslationViewState(textFrom, textTo) {
 	enum class ErrorType {
-		CONNECTION, EMPTY_TEXT, TARGET_LANGUAGE
+		CONNECTION, EMPTY_TEXT
 	}
 }

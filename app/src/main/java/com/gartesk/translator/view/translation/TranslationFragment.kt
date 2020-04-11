@@ -28,7 +28,10 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 	): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
 	override fun createPresenter(): TranslationPresenter =
-		TranslationPresenter(commandFactory.createGetTranslationCommand())
+		TranslationPresenter(
+			commandFactory.createGetTranslationCommand(),
+			commandFactory.createGetDefaultLanguageCommand()
+		)
 
 	override fun translationIntent(): Observable<Pair<Text, Language>> =
 		translateButton.clicks()
@@ -111,8 +114,6 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 				getString(R.string.translation_error_connection)
 			ErrorTranslationViewState.ErrorType.EMPTY_TEXT ->
 				getString(R.string.translation_error_empty_text)
-			ErrorTranslationViewState.ErrorType.TARGET_LANGUAGE ->
-				getString(R.string.translation_error_target_language)
 		}
 		languagesLayout.isEnabled = true
 		counterText.text = ""
