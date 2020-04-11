@@ -20,7 +20,7 @@ class StatsPresenter(private val observeAllStatsCommand: ObserveAllStatsCommand)
 			.map { stats ->
 				stats.languages.maxBy { language ->
 					stats.countFor(language)
-				}
+				} ?: Language.UNKNOWN_LANGUAGE
 			}
 
 		val selectedLanguageEmitter = intent(StatsView::selectedLanguageIntent)

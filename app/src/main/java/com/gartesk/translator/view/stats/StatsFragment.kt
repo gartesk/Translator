@@ -69,7 +69,7 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 	}
 
 	private fun refreshFilter(filters: List<Filter>) {
-		filtersScroll.visibility = VISIBLE
+		filtersScroll.visibility = if (filters.isEmpty()) GONE else VISIBLE
 		filtersContainer.removeAllViews()
 		filters.forEach { filter ->
 			val filterView = LayoutInflater.from(requireContext())
