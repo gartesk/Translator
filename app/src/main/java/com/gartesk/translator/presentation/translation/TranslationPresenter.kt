@@ -7,6 +7,7 @@ import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.translation.ErrorTranslationViewState.ErrorType
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
@@ -26,7 +27,14 @@ class TranslationPresenter(
 		cancellationDisposable = cancellation.subscribe { cancellationRelay.onNext(Unit) }
 
 		val viewStateEmitter = translation
-			.concatMap { (textFrom, languageTo) -> translate(textFrom, languageTo) }
+			.concatMap { (textFrom, languageTo) ->
+				if (languageTo == Language.UNKNOWN_LANGUAGE) {
+					getDefaultLanguageCommand.execute()
+				} else {
+					Single.just(languageTo)
+				}
+					.flatMapObservable { actualLanguageTo -> translate(textFrom, actualLanguageTo) }
+			}
 			.observeOn(AndroidSchedulers.mainThread())
 
 		subscribeViewState(viewStateEmitter, TranslationView::render)
@@ -46,33 +54,12 @@ class TranslationPresenter(
 			)
 		}
 
-		return if (languageTo == Language.UNKNOWN_LANGUAGE) {
-			getDefaultLanguageCommand.execute()
-				.flatMap { getTranslationCommand.execute(textFrom, it) }
-		} else {
-			getTranslationCommand.execute(textFrom, languageTo)
-		}
+		return getTranslationCommand.execute(textFrom, languageTo)
 			.toObservable()
 			.takeUntil(cancellationRelay)
-			.map<TranslationViewState> {
-				IdleTranslationViewState(
-					it.from,
-					it.to,
-					it.counter
-				)
-			}
-			.defaultIfEmpty(
-				IdleTranslationViewState(
-					textFrom,
-					Text(language = languageTo)
-				)
-			)
-			.startWith(
-				LoadingTranslationViewState(
-					textFrom,
-					Text(language = languageTo)
-				)
-			)
+			.map<TranslationViewState> { IdleTranslationViewState(it.from, it.to, it.counter) }
+			.defaultIfEmpty(IdleTranslationViewState(textFrom, Text(language = languageTo)))
+			.startWith(LoadingTranslationViewState(textFrom, Text(language = languageTo)))
 			.onErrorReturn {
 				ErrorTranslationViewState(
 					textFrom,
