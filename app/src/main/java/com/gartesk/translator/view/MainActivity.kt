@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
 		navigator = Navigator(this)
 	}
 
-	override fun onBackPressed() {
-		finish()
-	}
-
 	override fun onNewIntent(intent: Intent) {
 		super.onNewIntent(intent)
 		navigator.onNewIntent(intent)
+	}
+
+	override fun onBackPressed() {
+		navigator.onBackPressed()
 	}
 }

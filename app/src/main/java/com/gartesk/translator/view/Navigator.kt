@@ -3,9 +3,13 @@ package com.gartesk.translator.view
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.NavArgument
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
@@ -21,10 +25,11 @@ class Navigator(private val activity: MainActivity) {
 
 	private val navController = activity.navHostFragment.findNavController()
 	private val navigationView = activity.navigationView
+	private val rootDestinationIds = setOf(R.id.translation, R.id.stats)
 
 	init {
 		initNavGraph()
-		initNavigationView()
+		initViews()
 	}
 
 	private fun initNavGraph() {
@@ -42,23 +47,24 @@ class Navigator(private val activity: MainActivity) {
 		navController.graph = graph
 	}
 
-	private fun initNavigationView() {
-		navigationView.setOnNavigationItemSelectedListener {
-			val currentId = navController.currentDestination?.id
-			when {
-				it.itemId == R.id.translation && currentId != R.id.translationFragment ->
-					navController.navigate(R.id.actionToTranslationFragment)
+	private fun initViews() {
+		navigationView.setupWithNavController(navController)
 
-				it.itemId == R.id.stats && currentId != R.id.statsFragment ->
-					navController.navigate(R.id.actionToStatsFragment)
+		val appBarConfiguration = AppBarConfiguration(rootDestinationIds)
+		activity.setupActionBarWithNavController(navController, appBarConfiguration)
+
+		navController.addOnDestinationChangedListener { _, destination, _ ->
+			navigationView.visibility = when (destination.id) {
+				in rootDestinationIds -> View.VISIBLE
+				else -> View.GONE
 			}
-			true
 		}
 	}
 
 	fun onNewIntent(intent: Intent) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			val textToProcess: CharSequence? = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
+			val textToProcess: CharSequence? =
+				intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)
 			val bundle = bundleOf(KEY_TEXT to textToProcess)
 			openTranslationInternal(bundle)
 		}
@@ -74,20 +80,33 @@ class Navigator(private val activity: MainActivity) {
 	}
 
 	private fun openTranslationInternal(bundle: Bundle) {
-		navController.navigate(R.id.actionToTranslationFragment, bundle)
-		activity.navigationView.selectedItemId = R.id.translation
+		navController.navigate(R.id.translation, bundle)
 	}
 
-	fun getArguments(bundle: Bundle?): Pair<Text, Language>? {
+	fun getTranslationArguments(bundle: Bundle?): Pair<Text, Language>? {
 		val textContent = bundle?.getString(KEY_TEXT)
 		val languageFromCode = bundle?.getString(KEY_LANGUAGE_FROM)
 		val languageToCode = bundle?.getString(KEY_LANGUAGE_TO)
 		return if (textContent != null) {
-			val languageFrom = if (languageFromCode != null) Language(languageFromCode) else Language.UNKNOWN_LANGUAGE
-			val languageTo = if (languageToCode != null) Language(languageToCode) else Language.UNKNOWN_LANGUAGE
+			val languageFrom =
+				if (languageFromCode != null) Language(languageFromCode) else Language.UNKNOWN_LANGUAGE
+			val languageTo =
+				if (languageToCode != null) Language(languageToCode) else Language.UNKNOWN_LANGUAGE
 			Text(content = textContent, language = languageFrom) to languageTo
 		} else {
 			null
+		}
+	}
+
+	fun openAbout() {
+		navController.navigate(R.id.actionToAbout)
+	}
+
+	fun onBackPressed() {
+		if (navController.currentDestination?.id in rootDestinationIds) {
+			activity.finish()
+		} else {
+			navController.popBackStack()
 		}
 	}
 }

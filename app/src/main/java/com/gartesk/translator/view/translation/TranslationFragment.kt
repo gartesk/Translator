@@ -1,11 +1,9 @@
 package com.gartesk.translator.view.translation
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Direction
@@ -27,6 +25,23 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 		savedInstanceState: Bundle?
 	): View? = inflater.inflate(R.layout.fragment_translation, container, false)
 
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		setHasOptionsMenu(true)
+	}
+
+	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+		inflater.inflate(R.menu.common, menu)
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem): Boolean =
+		if (item.itemId == R.id.about) {
+			navigator.openAbout()
+			true
+		} else {
+			super.onOptionsItemSelected(item)
+		}
+
 	override fun createPresenter(): TranslationPresenter =
 		TranslationPresenter(
 			commandFactory.createGetTranslationCommand(),
@@ -41,7 +56,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 				Text(contentFrom, selectedDirection.from) to selectedDirection.to
 			}
 			.let {
-				val initialTranslation = navigator.getArguments(arguments)
+				val initialTranslation = navigator.getTranslationArguments(arguments)
 				if (initialTranslation != null) {
 					it.startWith(initialTranslation)
 				} else {

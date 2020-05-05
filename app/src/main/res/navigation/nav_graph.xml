@@ -3,28 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/translationFragment">
+    app:startDestination="@id/translation"
+    tools:ignore="UnusedNavigation">
 
     <fragment
-        android:id="@+id/translationFragment"
+        android:id="@+id/translation"
         android:name="com.gartesk.translator.view.translation.TranslationFragment"
-        android:label="TranslationFragment"
+        android:label="@string/label_translation"
         tools:layout="@layout/fragment_translation">
         <action
-            android:id="@+id/actionToStatsFragment"
-            app:destination="@id/statsFragment" />
+            android:id="@+id/actionToAbout"
+            app:destination="@id/about" />
         <argument
             android:name="text"
             android:defaultValue="@null"
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/statsFragment"
+        android:id="@+id/stats"
         android:name="com.gartesk.translator.view.stats.StatsFragment"
-        android:label="StatsFragment"
+        android:label="@string/label_stats"
         tools:layout="@layout/fragment_stats">
         <action
-            android:id="@+id/actionToTranslationFragment"
-            app:destination="@id/translationFragment" />
+            android:id="@+id/actionToAbout"
+            app:destination="@id/about" />
     </fragment>
+    <fragment
+        android:id="@+id/about"
+        android:name="com.gartesk.translator.view.about.AboutFragment"
+        android:label="@string/label_about"
+        tools:layout="@layout/fragment_about" />
 </navigation>

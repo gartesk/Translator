@@ -1,11 +1,9 @@
 package com.gartesk.translator.view.stats
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Language
@@ -31,9 +29,22 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		setHasOptionsMenu(true)
 		adapter = StatsAdapter(::navigateToTranslation)
 		statsList.adapter = adapter
 	}
+
+	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+		inflater.inflate(R.menu.common, menu)
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem): Boolean =
+		if (item.itemId == R.id.about) {
+			navigator.openAbout()
+			true
+		} else {
+			super.onOptionsItemSelected(item)
+		}
 
 	private fun navigateToTranslation(text: Text, languageTo: Language) {
 		navigator.openTranslation(text, languageTo)
