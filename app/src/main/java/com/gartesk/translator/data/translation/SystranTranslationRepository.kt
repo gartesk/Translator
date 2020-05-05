@@ -18,11 +18,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 class SystranTranslationRepository(context: Context) : TranslationRepository {
 
 	private companion object {
 		private const val API_URL = "https://api-platform.systran.net"
+		private const val CONNECT_TIMEOUT_MILLIS = 10000L
+		private const val WRITE_TIMEOUT_MILLIS = 30000L
+		private const val READ_TIMEOUT_MILLIS = 30000L
 	}
 
 	private val packageName = context.packageName
@@ -32,6 +36,9 @@ class SystranTranslationRepository(context: Context) : TranslationRepository {
 		.client(
 			OkHttpClient.Builder()
 				.addNetworkInterceptor(HttpLoggingInterceptor().apply { level = BODY })
+				.connectTimeout(CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+				.readTimeout(READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+				.writeTimeout(WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
 				.build()
 		)
 		.addConverterFactory(GsonConverterFactory.create())
