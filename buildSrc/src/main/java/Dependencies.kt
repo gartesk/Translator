@@ -1,18 +1,18 @@
 object Versions {
-	const val androidXAppCompat = "1.2.0-alpha01"
+	const val androidXAppCompat = "1.3.0-alpha01"
 	const val androidXCardView = "1.0.0"
-	const val androidXNavigation = "2.2.0-rc04"
+	const val androidXNavigation = "2.3.0-beta01"
 	const val androidXConstraintLayout = "2.0.0-beta4"
-	const val material = "1.2.0-alpha05"
-	const val rxJava = "2.2.4"
+	const val material = "1.2.0-beta01"
+	const val rxJava = "2.2.18"
 	const val rxAndroid = "2.1.1"
 	const val rxBinding = "3.1.0"
 	const val mosbyX = "4.0.1"
-	const val retrofit = "2.7.1"
-	const val okHttp = "4.2.2"
+	const val retrofit = "2.9.0"
+	const val okHttp = "4.7.2"
 	const val objectBox = "2.5.1"
-	const val kotlin = "1.3.61"
-	const val gradle = "3.5.3"
+	const val kotlin = "1.3.72"
+	const val gradle = "4.0.0"
 	const val targetSdk = 28
 	const val compileSdk = 28
 }
