@@ -11,6 +11,8 @@ import android.widget.AdapterView
 import android.widget.BaseAdapter
 import com.gartesk.mosbyx.mvi.MviLinearLayout
 import com.gartesk.translator.R
+import com.gartesk.translator.databinding.ItemLanguageBinding
+import com.gartesk.translator.databinding.ViewLanguagesBinding
 import com.gartesk.translator.domain.entity.*
 import com.gartesk.translator.presentation.translation.languages.LanguagesPresenter
 import com.gartesk.translator.presentation.translation.languages.LanguagesView
@@ -18,8 +20,6 @@ import com.gartesk.translator.presentation.translation.languages.LanguagesViewSt
 import com.gartesk.translator.view.commandFactory
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.android.synthetic.main.item_language.view.*
-import kotlinx.android.synthetic.main.view_languages.view.*
 
 class LanguagesLayout @JvmOverloads constructor(
 	context: Context,
@@ -29,10 +29,12 @@ class LanguagesLayout @JvmOverloads constructor(
 ) : MviLinearLayout<LanguagesView, LanguagesPresenter>(context, attrs, defStyleAttr, defStyleRes),
 	LanguagesView {
 
+	private var binding: ViewLanguagesBinding = ViewLanguagesBinding.inflate(LayoutInflater.from(context))
+
 	private val directionSelectionSubject = BehaviorSubject.create<Direction>()
 
-	private val fromAdapter: LanguagesAdapter
-	private val toAdapter: LanguagesAdapter
+	private val fromAdapter = LanguagesAdapter(context)
+	private val toAdapter = LanguagesAdapter(context)
 
 	private val onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 		override fun onNothingSelected(parent: AdapterView<*>) {
@@ -45,26 +47,24 @@ class LanguagesLayout @JvmOverloads constructor(
 	}
 
 	init {
-		inflate(context, R.layout.view_languages, this)
+		binding.languageFromSpinner.adapter = fromAdapter
+		binding.languageFromSpinner.onItemSelectedListener = onItemSelectedListener
 
-		fromAdapter = LanguagesAdapter(context)
-		languageFromSpinner.adapter = fromAdapter
-		languageFromSpinner.onItemSelectedListener = onItemSelectedListener
+		binding.languageToSpinner.adapter = toAdapter
+		binding.languageToSpinner.onItemSelectedListener = onItemSelectedListener
 
-		toAdapter = LanguagesAdapter(context)
-		languageToSpinner.adapter = toAdapter
-		languageToSpinner.onItemSelectedListener = onItemSelectedListener
-
-		swapLanguageButton.setOnClickListener {
+		binding.swapLanguageButton.setOnClickListener {
 			val selectedDirection = getSelectedDirection()
 			directionSelectionSubject.onNext(selectedDirection.reverted)
 		}
 	}
 
 	fun getSelectedDirection(): Direction {
-		val selectedLanguageFrom = (languageFromSpinner.selectedItem as? LanguageHolder)?.language
+		val selectedLanguageFrom = (binding.languageFromSpinner.selectedItem as? LanguageHolder)
+			?.language
 			?: Language.UNKNOWN_LANGUAGE
-		val selectedLanguageTo = (languageToSpinner.selectedItem as? LanguageHolder)?.language
+		val selectedLanguageTo = (binding.languageToSpinner.selectedItem as? LanguageHolder)
+			?.language
 			?: Language.UNKNOWN_LANGUAGE
 		return Direction(selectedLanguageFrom, selectedLanguageTo)
 	}
@@ -120,14 +120,14 @@ class LanguagesLayout @JvmOverloads constructor(
 		if (toIndex == AdapterView.INVALID_POSITION) {
 			toIndexToSelect = 0
 		}
-		languageFromSpinner.setSelection(fromIndexToSelect)
-		languageToSpinner.setSelection(toIndexToSelect)
+		binding.languageFromSpinner.setSelection(fromIndexToSelect)
+		binding.languageToSpinner.setSelection(toIndexToSelect)
 	}
 
 	override fun setEnabled(enabled: Boolean) {
 		super.setEnabled(enabled)
-		languageFromSpinner.isEnabled = enabled
-		languageToSpinner.isEnabled = enabled
+		binding.languageFromSpinner.isEnabled = enabled
+		binding.languageToSpinner.isEnabled = enabled
 	}
 }
 
@@ -145,32 +145,32 @@ private class LanguagesAdapter(
 		}
 
 	override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-		val view = convertView ?: createView(parent)
-		view.languageName.text = if (objects[position].language == Language.UNKNOWN_LANGUAGE) {
+		val binding = convertView?.let { ItemLanguageBinding.bind(it) } ?: createItemViewBinding()
+		binding.languageName.text = if (objects[position].language == Language.UNKNOWN_LANGUAGE) {
 			context.getString(R.string.language_default)
 		} else {
 			objects[position].language.code
 		}
-		view.languageSelectedIcon.visibility = if (objects[position].selected) VISIBLE else GONE
-		view.languageSeparator.visibility = VISIBLE
-		view.languageSeparator.visibility = if (position == objects.size - 1) GONE else VISIBLE
-		return view
+		binding.languageSelectedIcon.visibility = if (objects[position].selected) VISIBLE else GONE
+		binding.languageSeparator.visibility = VISIBLE
+		binding.languageSeparator.visibility = if (position == objects.size - 1) GONE else VISIBLE
+		return binding.root
 	}
 
 	override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-		val view = convertView ?: createView(parent)
-		view.languageName.text = if (objects[position].language == Language.UNKNOWN_LANGUAGE) {
+		val binding = convertView?.let { ItemLanguageBinding.bind(it) } ?: createItemViewBinding()
+		binding.languageName.text = if (objects[position].language == Language.UNKNOWN_LANGUAGE) {
 			context.getString(R.string.language_default)
 		} else {
 			objects[position].language.code
 		}
-		view.languageSelectedIcon.visibility = GONE
-		view.languageSeparator.visibility = GONE
-		return view
+		binding.languageSelectedIcon.visibility = GONE
+		binding.languageSeparator.visibility = GONE
+		return binding.root
 	}
 
-	private fun createView(parent: ViewGroup?): View =
-		LayoutInflater.from(context).inflate(R.layout.item_language, parent, false)
+	private fun createItemViewBinding(): ItemLanguageBinding =
+		ItemLanguageBinding.inflate(LayoutInflater.from(context))
 
 	override fun getItem(position: Int): LanguageHolder =
 		objects[position]

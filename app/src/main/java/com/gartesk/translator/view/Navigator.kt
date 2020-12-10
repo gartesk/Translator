@@ -6,14 +6,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.NavArgument
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.gartesk.translator.R
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
-import kotlinx.android.synthetic.main.activity_main.*
 
 class Navigator(private val activity: MainActivity) {
 
@@ -23,8 +22,8 @@ class Navigator(private val activity: MainActivity) {
 		private const val KEY_LANGUAGE_TO = "translation.languageTo"
 	}
 
-	private val navController = activity.navHostFragment.findNavController()
-	private val navigationView = activity.navigationView
+	private val navController = activity.binding.navHostFragment.findNavController()
+	private val navigationView = activity.binding.navigationView
 	private val rootDestinationIds = setOf(R.id.translation, R.id.stats)
 
 	init {

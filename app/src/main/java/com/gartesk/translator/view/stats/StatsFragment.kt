@@ -6,6 +6,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
+import com.gartesk.translator.databinding.FragmentStatsBinding
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.stats.*
@@ -14,9 +15,10 @@ import com.gartesk.translator.view.navigator
 import com.google.android.material.chip.Chip
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.android.synthetic.main.fragment_stats.*
 
 class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
+
+	private lateinit var binding: FragmentStatsBinding
 
 	private lateinit var adapter: StatsAdapter
 	private val selectedLanguageSubject = BehaviorSubject.create<Language>()
@@ -25,13 +27,16 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 		inflater: LayoutInflater,
 		container: ViewGroup?,
 		savedInstanceState: Bundle?
-	): View? = inflater.inflate(R.layout.fragment_stats, container, false)
+	): View {
+		binding = FragmentStatsBinding.inflate(inflater)
+		return binding.root
+	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		setHasOptionsMenu(true)
 		adapter = StatsAdapter(::navigateToTranslation)
-		statsList.adapter = adapter
+		binding.statsList.adapter = adapter
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -65,32 +70,32 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 	}
 
 	private fun renderIdleState(viewState: IdleStatsViewState) {
-		statsList.visibility = VISIBLE
+		binding.statsList.visibility = VISIBLE
 		adapter.items = viewState.stats
 		refreshFilter(viewState.filters)
-		statsEmptyText.visibility = GONE
-		statsProgress.visibility = GONE
+		binding.statsEmptyText.visibility = GONE
+		binding.statsProgress.visibility = GONE
 	}
 
 	private fun renderEmptyState(viewState: EmptyStatsViewState) {
-		statsList.visibility = GONE
+		binding.statsList.visibility = GONE
 		refreshFilter(viewState.filters)
-		statsEmptyText.visibility = VISIBLE
-		statsProgress.visibility = GONE
+		binding.statsEmptyText.visibility = VISIBLE
+		binding.statsProgress.visibility = GONE
 	}
 
 	private fun refreshFilter(filters: List<Filter>) {
-		filtersScroll.visibility = if (filters.isEmpty()) GONE else VISIBLE
-		filtersContainer.removeAllViews()
+		binding.filtersScroll.visibility = if (filters.isEmpty()) GONE else VISIBLE
+		binding.filtersContainer.removeAllViews()
 		filters.forEach { filter ->
 			val filterView = LayoutInflater.from(requireContext())
-				.inflate(R.layout.item_filter, filtersContainer, false)
+				.inflate(R.layout.item_filter, binding.filtersContainer, false)
 			val chip = filterView as Chip
 			chip.id = View.generateViewId()
 			chip.isChecked = filter.selected
 			chip.tag = filter.language
 			chip.text = getString(R.string.stats_filter, filter.language.code, filter.counter)
-			filtersContainer.addView(filterView)
+			binding.filtersContainer.addView(filterView)
 			chip.setOnCheckedChangeListener { _, checked ->
 				if (checked) {
 					selectedLanguageSubject.onNext(filter.language)
@@ -100,9 +105,9 @@ class StatsFragment : MviFragment<StatsView, StatsPresenter>(), StatsView {
 	}
 
 	private fun renderLoadingState() {
-		statsList.visibility = GONE
-		filtersScroll.visibility = GONE
-		statsEmptyText.visibility = GONE
-		statsProgress.visibility = VISIBLE
+		binding.statsList.visibility = GONE
+		binding.filtersScroll.visibility = GONE
+		binding.statsEmptyText.visibility = GONE
+		binding.statsProgress.visibility = VISIBLE
 	}
 }

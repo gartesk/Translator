@@ -6,6 +6,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
+import com.gartesk.translator.databinding.FragmentTranslationBinding
 import com.gartesk.translator.domain.entity.Direction
 import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
@@ -14,16 +15,20 @@ import com.gartesk.translator.view.commandFactory
 import com.gartesk.translator.view.navigator
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.fragment_translation.*
 
 class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>(),
 	TranslationView {
+
+	private lateinit var binding: FragmentTranslationBinding
 
 	override fun onCreateView(
 		inflater: LayoutInflater,
 		container: ViewGroup?,
 		savedInstanceState: Bundle?
-	): View? = inflater.inflate(R.layout.fragment_translation, container, false)
+	): View {
+		binding = FragmentTranslationBinding.inflate(inflater)
+		return binding.root
+	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
@@ -49,10 +54,10 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 		)
 
 	override fun translationIntent(): Observable<Pair<Text, Language>> =
-		translateButton.clicks()
+		binding.translateButton.clicks()
 			.map {
-				val contentFrom = translatingInput.text.toString()
-				val selectedDirection = languagesLayout.getSelectedDirection()
+				val contentFrom = binding.translatingInput.text.toString()
+				val selectedDirection = binding.languagesLayout.getSelectedDirection()
 				Text(contentFrom, selectedDirection.from) to selectedDirection.to
 			}
 			.let {
@@ -65,8 +70,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 			}
 
 	override fun cancellationIntent(): Observable<Unit> =
-		cancelButton.clicks()
-			.map { Unit }
+		binding.cancelButton.clicks()
 
 	override fun render(viewState: TranslationViewState) {
 		renderCommonState(viewState)
@@ -78,61 +82,61 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 	}
 
 	private fun renderCommonState(viewState: TranslationViewState) {
-		translatingInput.setText(viewState.textFrom.content)
-		languagesLayout.setSelectedDirection(
+		binding.translatingInput.setText(viewState.textFrom.content)
+		binding.languagesLayout.setSelectedDirection(
 			Direction(viewState.textFrom.language, viewState.textTo.language)
 		)
 	}
 
 	private fun renderIdleState(viewState: IdleTranslationViewState) {
-		translatingProgress.visibility = GONE
-		translateButton.isEnabled = true
-		cancelButton.visibility = GONE
-		translatingInput.isEnabled = true
-		translatedText.text = viewState.textTo.content
-		translatingInputLayout.error = null
-		languagesLayout.isEnabled = true
+		binding.translatingProgress.visibility = GONE
+		binding.translateButton.isEnabled = true
+		binding.cancelButton.visibility = GONE
+		binding.translatingInput.isEnabled = true
+		binding.translatedText.text = viewState.textTo.content
+		binding.translatingInputLayout.error = null
+		binding.languagesLayout.isEnabled = true
 		if (viewState.counter != null) {
-			counterText.text = resources.getQuantityString(
+			binding.counterText.text = resources.getQuantityString(
 				R.plurals.counter_text_format,
 				viewState.counter,
 				viewState.counter
 			)
-			counterText.visibility = VISIBLE
+			binding.counterText.visibility = VISIBLE
 		} else {
-			counterText.visibility = GONE
+			binding.counterText.visibility = GONE
 		}
-		translationResultCard.visibility = if (viewState.textTo.content.isEmpty()) GONE else VISIBLE
+		binding.translationResultCard.visibility = if (viewState.textTo.content.isEmpty()) GONE else VISIBLE
 	}
 
 	private fun renderLoadingState() {
-		translatingProgress.visibility = VISIBLE
-		translateButton.isEnabled = false
-		cancelButton.visibility = VISIBLE
-		translatingInput.isEnabled = false
-		translatedText.text = ""
-		translatingInputLayout.error = null
-		languagesLayout.isEnabled = false
-		counterText.text = ""
-		counterText.visibility = GONE
-		translationResultCard.visibility = GONE
+		binding.translatingProgress.visibility = VISIBLE
+		binding.translateButton.isEnabled = false
+		binding.cancelButton.visibility = VISIBLE
+		binding.translatingInput.isEnabled = false
+		binding.translatedText.text = ""
+		binding.translatingInputLayout.error = null
+		binding.languagesLayout.isEnabled = false
+		binding.counterText.text = ""
+		binding.counterText.visibility = GONE
+		binding.translationResultCard.visibility = GONE
 	}
 
 	private fun renderErrorState(viewState: ErrorTranslationViewState) {
-		translatingProgress.visibility = GONE
-		translateButton.isEnabled = true
-		cancelButton.visibility = GONE
-		translatingInput.isEnabled = true
-		translatedText.text = ""
-		translatingInputLayout.error = when (viewState.error) {
+		binding.translatingProgress.visibility = GONE
+		binding.translateButton.isEnabled = true
+		binding.cancelButton.visibility = GONE
+		binding.translatingInput.isEnabled = true
+		binding.translatedText.text = ""
+		binding.translatingInputLayout.error = when (viewState.error) {
 			ErrorTranslationViewState.ErrorType.CONNECTION ->
 				getString(R.string.translation_error_connection)
 			ErrorTranslationViewState.ErrorType.EMPTY_TEXT ->
 				getString(R.string.translation_error_empty_text)
 		}
-		languagesLayout.isEnabled = true
-		counterText.text = ""
-		counterText.visibility = GONE
-		translationResultCard.visibility = GONE
+		binding.languagesLayout.isEnabled = true
+		binding.counterText.text = ""
+		binding.counterText.visibility = GONE
+		binding.translationResultCard.visibility = GONE
 	}
 }
