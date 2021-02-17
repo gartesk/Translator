@@ -1,9 +1,6 @@
 package com.gartesk.translator.domain.command
 
-import com.gartesk.translator.domain.entity.Language
-import com.gartesk.translator.domain.entity.Text
-import com.gartesk.translator.domain.entity.Translation
-import com.gartesk.translator.domain.entity.toTranslation
+import com.gartesk.translator.domain.entity.*
 import com.gartesk.translator.domain.repository.StatsRepository
 import com.gartesk.translator.domain.repository.TranslationRepository
 import io.reactivex.Single
@@ -13,12 +10,20 @@ class GetTranslationCommand(
 	private val statsRepository: StatsRepository
 ) {
 
-	fun execute(textFrom: Text, languageTo: Language): Single<Translation> =
+	fun execute(textFrom: String, languageTo: Language): Single<CountedTranslation> =
 		translationRepository.translate(textFrom, languageTo)
-			.flatMap { (languageFrom, textTo) ->
-				val updatedTextFrom = textFrom.copy(language = languageFrom)
-				statsRepository.increment(updatedTextFrom, languageTo)
-					.andThen(statsRepository.get(updatedTextFrom))
-					.map { it.toTranslation(textTo.content, languageTo) }
+			.flatMap { translation ->
+				statsRepository.increment(translation.from, translation.to.language)
+					.andThen(statsRepository.get(translation.from))
+					.map { it.toCountedTranslation(translation.to) }
 			}
 }
+
+private fun Stat.toCountedTranslation(textTo: Text): CountedTranslation =
+	CountedTranslation(
+		from = from,
+		to = textTo,
+		counter = counters
+			.firstOrNull { it.language == textTo.language }
+			?.value ?: 0
+	)

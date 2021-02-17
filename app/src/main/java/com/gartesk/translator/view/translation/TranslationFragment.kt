@@ -7,9 +7,7 @@ import android.view.View.VISIBLE
 import com.gartesk.mosbyx.mvi.MviFragment
 import com.gartesk.translator.R
 import com.gartesk.translator.databinding.FragmentTranslationBinding
-import com.gartesk.translator.domain.entity.Direction
 import com.gartesk.translator.domain.entity.Language
-import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.translation.*
 import com.gartesk.translator.view.commandFactory
 import com.gartesk.translator.view.navigator
@@ -53,17 +51,13 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 			commandFactory.createGetDefaultLanguageCommand()
 		)
 
-	override fun translationIntent(): Observable<Pair<Text, Language>> =
+	override fun translationIntent(): Observable<String> =
 		binding.translateButton.clicks()
-			.map {
-				val contentFrom = binding.translatingInput.text.toString()
-				val selectedDirection = binding.languagesLayout.getSelectedDirection()
-				Text(contentFrom, selectedDirection.from) to selectedDirection.to
-			}
+			.map { binding.translatingInput.text.toString() }
 			.let {
 				val initialTranslation = navigator.getTranslationArguments(arguments)
 				if (initialTranslation != null) {
-					it.startWith(initialTranslation)
+					it.startWith(initialTranslation.first.content)
 				} else {
 					it
 				}
@@ -71,6 +65,9 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 
 	override fun cancellationIntent(): Observable<Unit> =
 		binding.cancelButton.clicks()
+
+	override fun languageSelectionIntent(): Observable<Language> =
+		binding.languagesLayout.languageSelection()
 
 	override fun render(viewState: TranslationViewState) {
 		renderCommonState(viewState)
@@ -83,9 +80,7 @@ class TranslationFragment : MviFragment<TranslationView, TranslationPresenter>()
 
 	private fun renderCommonState(viewState: TranslationViewState) {
 		binding.translatingInput.setText(viewState.textFrom.content)
-		binding.languagesLayout.setSelectedDirection(
-			Direction(viewState.textFrom.language, viewState.textTo.language)
-		)
+		binding.languagesLayout.selectLanguage(viewState.textTo.language)
 	}
 
 	private fun renderIdleState(viewState: IdleTranslationViewState) {

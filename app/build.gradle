@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.objectbox'
 
 android {
@@ -12,8 +11,7 @@ android {
         targetSdkVersion Versions.targetSdk
         versionCode 1
         versionName "1.0"
-        buildConfigField 'String', 'SYSTRAN_API_KEY', systranApiKey
-        buildConfigField 'String', 'CERT_FINGERPRINT', translatorCertFingerprint
+        buildConfigField 'String', 'GCLOUD_TOKEN', getGoogleTranslationToken()
     }
     buildTypes {
         release {

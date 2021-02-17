@@ -8,8 +8,8 @@ sealed class TranslationViewState(
 )
 
 class IdleTranslationViewState(
-	textFrom: Text = Text(),
-	textTo: Text = Text(),
+	textFrom: Text,
+	textTo: Text,
 	val counter: Int? = null
 ) : TranslationViewState(textFrom, textTo)
 

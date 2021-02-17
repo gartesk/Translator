@@ -28,6 +28,6 @@ class GetDefaultLanguageCommand(
 	private fun List<Stat>.getPopularLanguage(): Language? =
 		flatMap { it.counters }
 			.groupBy { counter -> counter.language }
-			.maxBy { it.value.size }
+			.maxByOrNull { it.value.size }
 			?.key
 }

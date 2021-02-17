@@ -26,3 +26,17 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+def getGoogleTranslationToken() {
+    def stdout = new ByteArrayOutputStream()
+
+    exec {
+        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+            commandLine 'cmd', '/c', 'gcloud auth application-default print-access-token'
+        } else {
+            commandLine 'sh', '-c', 'gcloud auth application-default print-access-token'
+        }
+        standardOutput = stdout
+    }
+    return "\"Bearer ${stdout.toString().replace("\r\n", "")}\""
+}

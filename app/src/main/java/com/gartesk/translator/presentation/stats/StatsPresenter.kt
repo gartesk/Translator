@@ -18,7 +18,7 @@ class StatsPresenter(private val observeAllStatsCommand: ObserveAllStatsCommand)
 
 		val defaultSelectedLanguageEmitter = statsEmitter.firstOrError()
 			.map { stats ->
-				stats.languages.maxBy { language ->
+				stats.languages.maxByOrNull { language ->
 					stats.countFor(language)
 				} ?: Language.UNKNOWN_LANGUAGE
 			}

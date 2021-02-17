@@ -7,7 +7,6 @@ import com.gartesk.translator.domain.entity.Language
 import com.gartesk.translator.domain.entity.Text
 import com.gartesk.translator.presentation.translation.ErrorTranslationViewState.ErrorType
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
@@ -23,17 +22,18 @@ class TranslationPresenter(
 	override fun bindIntents() {
 		val cancellation = intent(TranslationView::cancellationIntent)
 		val translation = intent(TranslationView::translationIntent)
+		val languageSelection = intent(TranslationView::languageSelectionIntent)
+			.startWith(
+				getDefaultLanguageCommand.execute()
+					.toObservable()
+					.onErrorReturnItem(Language.UNKNOWN_LANGUAGE)
+			)
 
 		cancellationDisposable = cancellation.subscribe { cancellationRelay.onNext(Unit) }
 
 		val viewStateEmitter = translation
-			.concatMap { (textFrom, languageTo) ->
-				if (languageTo == Language.UNKNOWN_LANGUAGE) {
-					getDefaultLanguageCommand.execute()
-				} else {
-					Single.just(languageTo)
-				}
-					.flatMapObservable { actualLanguageTo -> translate(textFrom, actualLanguageTo) }
+			.concatMap { textFrom ->
+				languageSelection.flatMap { actualLanguageTo -> translate(textFrom, actualLanguageTo) }
 			}
 			.observeOn(AndroidSchedulers.mainThread())
 
@@ -41,13 +41,13 @@ class TranslationPresenter(
 	}
 
 	private fun translate(
-		textFrom: Text,
+		textFrom: String,
 		languageTo: Language
 	): Observable<TranslationViewState> {
-		if (textFrom.content.isEmpty()) {
+		if (textFrom.isEmpty()) {
 			return Observable.just(
 				ErrorTranslationViewState(
-					textFrom,
+					Text(content = textFrom),
 					Text(language = languageTo),
 					ErrorType.EMPTY_TEXT
 				)
@@ -58,11 +58,11 @@ class TranslationPresenter(
 			.toObservable()
 			.takeUntil(cancellationRelay)
 			.map<TranslationViewState> { IdleTranslationViewState(it.from, it.to, it.counter) }
-			.defaultIfEmpty(IdleTranslationViewState(textFrom, Text(language = languageTo)))
-			.startWith(LoadingTranslationViewState(textFrom, Text(language = languageTo)))
+			.defaultIfEmpty(IdleTranslationViewState(Text(content = textFrom), Text(language = languageTo)))
+			.startWith(LoadingTranslationViewState(Text(content = textFrom), Text(language = languageTo)))
 			.onErrorReturn {
 				ErrorTranslationViewState(
-					textFrom,
+					Text(content = textFrom),
 					Text(language = languageTo),
 					ErrorType.CONNECTION
 				)

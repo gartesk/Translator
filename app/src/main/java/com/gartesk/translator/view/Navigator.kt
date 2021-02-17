@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -22,7 +23,9 @@ class Navigator(private val activity: MainActivity) {
 		private const val KEY_LANGUAGE_TO = "translation.languageTo"
 	}
 
-	private val navController = activity.binding.navHostFragment.findNavController()
+	private val navController = activity.supportFragmentManager
+		.findFragmentById(R.id.navHostFragment)?.findNavController()
+		?: throw IllegalStateException("No nav controller found")
 	private val navigationView = activity.binding.navigationView
 	private val rootDestinationIds = setOf(R.id.translation, R.id.stats)
 
